@@ -1,0 +1,103 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Manrope", "Cairo", ui-sans-serif, system-ui, sans-serif;
+  --font-arabic: "Cairo", "Manrope", ui-sans-serif, system-ui, sans-serif;
+
+  --color-ink: #0a0a0a;
+  --color-ink-soft: #1a1a1a;
+  --color-paper: #ffffff;
+  --color-mist: #f4f4f4;
+  --color-fog: #e7e7e7;
+  --color-line: #dcdcdc;
+  --color-slate: #6b6b6b;
+  --color-slate-light: #9a9a9a;
+}
+
+:root {
+  color-scheme: light;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  background: var(--color-paper);
+  color: var(--color-ink);
+}
+
+html.lenis {
+  height: auto;
+}
+
+.lenis.lenis-smooth {
+  scroll-behavior: auto;
+}
+
+.lenis.lenis-stopped {
+  overflow: hidden;
+}
+
+body {
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+  margin: 0;
+}
+
+::selection {
+  background: var(--color-ink);
+  color: var(--color-paper);
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.font-arabic {
+  font-family: var(--font-arabic);
+}
+
+.text-balance {
+  text-wrap: balance;
+}
+
+@keyframes drift {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  50% {
+    transform: translate3d(-4%, 3%, 0) scale(1.06);
+  }
+}
+
+.animate-drift {
+  animation: drift 22s ease-in-out infinite;
+}
+
+@keyframes streak {
+  0% {
+    transform: translateX(-8%) rotate(var(--rot, 0deg));
+    opacity: 0.15;
+  }
+  50% {
+    opacity: 0.55;
+  }
+  100% {
+    transform: translateX(8%) rotate(var(--rot, 0deg));
+    opacity: 0.15;
+  }
+}
+
+.animate-streak {
+  animation-name: streak;
+  animation-timing-function: ease-in-out;
+  animation-iteration-count: infinite;
+}
