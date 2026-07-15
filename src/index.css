@@ -24,7 +24,9 @@
 
 html,
 body {
-  background: var(--color-paper);
+  /* No background here on purpose: GlobalBackground.jsx renders the single
+     fixed white + soft-shadow backdrop once at the App root. Sections scroll
+     transparently over it (the black card section opaquely overrides it). */
   color: var(--color-ink);
 }
 

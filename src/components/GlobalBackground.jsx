@@ -1,3 +1,8 @@
+/**
+ * Single fixed backdrop for the whole site, rendered once at the App root.
+ * It never scrolls — sections scroll transparently over it, except the
+ * black card section, which paints an opaque bg-black over it while in view.
+ */
 export default function GlobalBackground() {
   return (
     <div className="pointer-events-none fixed inset-0 -z-10 overflow-hidden bg-paper">

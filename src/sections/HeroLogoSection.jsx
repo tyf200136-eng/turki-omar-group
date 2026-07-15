@@ -80,7 +80,7 @@ export default function HeroLogoSection() {
   return (
     <section
       ref={sectionRef}
-      className="relative h-screen w-full overflow-hidden bg-transparent"
+      className="relative h-screen w-full overflow-hidden"
     >
       <LogoScene progressRef={progressRef} className="absolute inset-0" />
 

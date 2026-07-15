@@ -96,8 +96,6 @@ export default function BlackoutTransitionSection() {
           filter: "blur(40px)",
         }}
       />
-      <div className="absolute inset-0 bg-black opacity-0" />
-
       <div className="relative z-10 flex h-full w-full items-center justify-center px-6">
         <h2
           ref={headingRef}
