@@ -1,3 +1,4 @@
+import LogoMark from "./LogoMark.jsx";
 export default function Header() {
   return (
     <header

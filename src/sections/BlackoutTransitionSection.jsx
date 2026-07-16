@@ -51,15 +51,9 @@ export default function BlackoutTransitionSection() {
         },
       });
 
-      tl.to(vignetteRef.current, { scaleX: 1, ease: "none" }, 0).to(
-        headingRef.current,
-        { color: "#ffffff", opacity: 1, ease: "none" },
-        0,
-      ).to(
-        barsWrapRef.current,
-        { opacity: 0, ease: "none" },
-        0,
-      );
+      tl.to(vignetteRef.current, { scaleX: 1, ease: "none" }, 0)
+        .to(headingRef.current, { color: "#ffffff", opacity: 1, ease: "none" }, 0)
+        .to(barsWrapRef.current, { opacity: 0, ease: "none" }, 0);
     }, section);
 
     return () => ctx.revert();
@@ -68,41 +62,47 @@ export default function BlackoutTransitionSection() {
   return (
     <section
       ref={sectionRef}
-      className="relative h-screen w-full overflow-hidden bg-black"
+      className="relative h-screen w-full overflow-hidden bg-paper"
     >
-      <div ref={barsWrapRef} className="absolute inset-0 flex items-end">
-        {HEIGHTS.map((h, i) => (
-          <div
-            key={i}
-            className="flex-1"
-            style={{
-              height: `${h}%`,
-              background: TONES[i],
-              opacity: 0.85,
-            }}
-          />
-        ))}
-      </div>
+      {/* الكرت العائم: هامش من حواف الشاشة + زوايا دائرية بدل مربع كامل حاد */}
+      <div className="absolute inset-4 overflow-hidden rounded-[28px] bg-black md:inset-8">
+        <div ref={barsWrapRef} className="absolute inset-0 flex items-end px-2">
+          {HEIGHTS.map((h, i) => (
+            <div
+              key={i}
+              className="light-bar mx-[1px] flex-1"
+              style={{
+                height: `${h}%`,
+                background: TONES[i],
+                boxShadow: `0 0 16px 2px ${TONES[i]}`,
+                animationDuration: `${2.4 + (i % 5) * 0.6}s`,
+                animationDelay: `${(i % 9) * -0.35}s`,
+              }}
+            />
+          ))}
+        </div>
 
-      <div
-        ref={vignetteRef}
-        className="absolute inset-0 origin-center bg-black"
-        style={{
-          transform: "scaleX(0)",
-          maskImage:
-            "radial-gradient(ellipse 60% 90% at 50% 50%, black 55%, transparent 100%)",
-          WebkitMaskImage:
-            "radial-gradient(ellipse 60% 90% at 50% 50%, black 55%, transparent 100%)",
-          filter: "blur(40px)",
-        }}
-      />
-      <div className="relative z-10 flex h-full w-full items-center justify-center px-6">
-        <h2
-          ref={headingRef}
-          className="max-w-3xl text-center text-4xl font-semibold tracking-tight md:text-6xl"
-        >
-          Excellence, Engineered
-        </h2>
+        <div
+          ref={vignetteRef}
+          className="absolute inset-0 origin-center bg-black"
+          style={{
+            transform: "scaleX(0)",
+            maskImage:
+              "radial-gradient(ellipse 60% 90% at 50% 50%, black 55%, transparent 100%)",
+            WebkitMaskImage:
+              "radial-gradient(ellipse 60% 90% at 50% 50%, black 55%, transparent 100%)",
+            filter: "blur(40px)",
+          }}
+        />
+
+        <div className="relative z-10 flex h-full w-full items-center justify-center px-6">
+          <h2
+            ref={headingRef}
+            className="max-w-3xl text-center text-4xl font-semibold tracking-tight text-white md:text-6xl"
+          >
+            Excellence, Engineered
+          </h2>
+        </div>
       </div>
     </section>
   );

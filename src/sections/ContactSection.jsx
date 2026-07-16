@@ -10,31 +10,27 @@ export default function ContactSection() {
       <div className="rounded-[28px] bg-mist p-8 md:p-14">
         <div className="grid grid-cols-1 gap-12 md:grid-cols-2 md:gap-16">
           <div>
-            <span className="mb-6 inline-block rounded-full border border-line bg-paper px-4 py-1.5 text-xs tracking-[0.2em] text-slate uppercase">
-              Get in Touch
-            </span>
             <h2 className="mb-4 text-3xl font-semibold tracking-tight text-ink md:text-4xl">
-              <span className="font-bold text-ink">Let's build</span>{" "}
-              <span className="font-normal text-slate">something lasting.</span>
+              <span className="font-bold text-ink">لنبني معاً</span>{" "}
+              <span className="font-normal text-slate">قيمة تدوم.</span>
             </h2>
             <p className="mb-8 max-w-sm text-sm leading-relaxed text-slate md:text-base">
-              Whether you're exploring a partnership or simply want to learn
-              more about the group, we'd love to hear from you.
+              سواء كنت تدرس فرصة للشراكة أو ترغب ببساطة في معرفة المزيد عن المجموعة، يسعدنا دائماً تواصلك معنا.
             </p>
 
             <form onSubmit={handleSubmit} className="flex flex-col gap-4">
               <input
                 type="text"
-                placeholder="Your name"
+                placeholder="الاسم الكامل"
                 className="w-full rounded-full border border-line bg-paper px-6 py-3.5 text-sm text-ink placeholder:text-slate-light focus:border-ink focus:outline-none"
               />
               <input
                 type="email"
-                placeholder="Your email"
+                placeholder="البريد الإلكتروني"
                 className="w-full rounded-full border border-line bg-paper px-6 py-3.5 text-sm text-ink placeholder:text-slate-light focus:border-ink focus:outline-none"
               />
               <textarea
-                placeholder="Tell us about your project…"
+                placeholder="حدثنا عن مشروعك…"
                 rows={5}
                 className="w-full resize-none rounded-3xl border border-line bg-paper px-6 py-4 text-sm text-ink placeholder:text-slate-light focus:border-ink focus:outline-none"
               />
@@ -44,7 +40,7 @@ export default function ContactSection() {
                 whileTap={{ scale: 0.985 }}
                 className="mt-2 w-full rounded-full bg-ink py-4 text-sm font-medium tracking-wide text-paper"
               >
-                Send Message
+                إرسال
               </motion.button>
             </form>
           </div>

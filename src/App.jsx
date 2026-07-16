@@ -2,7 +2,6 @@ import useLenis from "./hooks/useLenis.js";
 import GlobalBackground from "./components/GlobalBackground.jsx";
 import Header from "./components/Header.jsx";
 import HeroLogoSection from "./sections/HeroLogoSection.jsx";
-import BlackoutTransitionSection from "./sections/BlackoutTransitionSection.jsx";
 import CompanyCoverflowSection from "./sections/CompanyCoverflowSection.jsx";
 import ServicesSection from "./sections/ServicesSection.jsx";
 import ApproachSection from "./sections/ApproachSection.jsx";
@@ -19,7 +18,6 @@ function App() {
 
       <main className="relative">
         <HeroLogoSection />
-        <BlackoutTransitionSection />
         <div id="companies">
           <CompanyCoverflowSection />
         </div>

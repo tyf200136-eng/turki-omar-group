@@ -39,7 +39,7 @@ export default function FooterSection() {
         <div className="border-t border-line pt-6">
           <div className="flex flex-col items-start justify-between gap-6 md:flex-row md:items-center">
             <p className="text-xs text-slate md:text-sm">
-              © 2026 Turki Omar Group. All rights reserved.
+              © 2026 مجموعة تركي عمر. جميع الحقوق محفوظة.
             </p>
             <div className="flex items-center gap-3">
               {SOCIALS.map((s) => (
