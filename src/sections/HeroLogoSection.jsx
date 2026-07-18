@@ -113,7 +113,7 @@ export default function HeroLogoSection() {
       {/* العنوان الافتتاحي — يجلس بأعلى الشاشة، فوق نص اللوقو الطالع من تحت */}
       <div
         ref={introRef}
-        className="pointer-events-none absolute inset-0 z-10 flex flex-col items-center justify-start px-6 pt-24 text-center md:pt-32"
+        className="pointer-events-none absolute inset-0 z-10 flex flex-col items-center justify-start px-6 pt-32 text-center md:pt-40"
       >
         <h1 className="mb-4 text-4xl font-semibold tracking-tight text-ink md:text-6xl">
           مجموعة تركي عمر

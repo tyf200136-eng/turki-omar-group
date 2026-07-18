@@ -2,7 +2,6 @@ import { useEffect, useRef } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import LightStreakBackground from "../components/LightStreakBackground.jsx";
-import GlassFilterDefs from "../components/GlassFilterDefs.jsx";
 import companies from "../utils/companies.js";
 
 gsap.registerPlugin(ScrollTrigger);
@@ -33,6 +32,8 @@ export default function CompanyCoverflowSection() {
   const barsWrapRef = useRef(null);
   const vignetteRef = useRef(null);
   const headingWrapRef = useRef(null);
+  const titleRef = useRef(null);
+  const paragraphRef = useRef(null);
   const cardRefs = useRef([]);
 
   useEffect(() => {
@@ -43,9 +44,11 @@ export default function CompanyCoverflowSection() {
       const cards = cardRefs.current.filter(Boolean);
       const n = cards.length;
 
-      // كل شي يبدأ مخفي: الكروت، والعنوان (مركزي ومنزّل شوي عشان يرتفع بعدين)
+      // الصندوق يبدأ بمنتصف الشاشة (مركزي)، والعنوان والفقرة كل واحد يظهر بلحظته الخاصة
       gsap.set(vignetteRef.current, { scaleX: 0 });
-      gsap.set(headingWrapRef.current, { y: "34vh", opacity: 0 });
+      gsap.set(headingWrapRef.current, { y: "34vh" });
+      gsap.set(titleRef.current, { opacity: 0 });
+      gsap.set(paragraphRef.current, { opacity: 0 });
       gsap.set(cards, {
         rotateY: -85,
         xPercent: 140,
@@ -71,13 +74,19 @@ export default function CompanyCoverflowSection() {
         defaults: { ease: "none" },
       });
 
-      // --- المرحلة 1 (0 → 1): الأضواء تتوهج، الخلفية تسود، العنوان يظهر بالمنتصف ---
+      // --- المرحلة 1 (0 → 1): الأضواء تتوهج، الخلفية تسود ---
       tl.to(vignetteRef.current, { scaleX: 1, duration: 0.55 }, 0);
-      tl.to(headingWrapRef.current, { opacity: 1, duration: 0.35 }, 0.1);
+
+      // العنوان "شركاتنا التابعة" يظهر أول وهو بمنتصف الشاشة
+      tl.to(titleRef.current, { opacity: 1, duration: 0.3 }, 0.1);
+
       tl.to(barsWrapRef.current, { opacity: 0, duration: 0.4 }, 0.45);
 
-      // --- العنوان يرتفع لأعلى قبل ما تبدأ الكروت بالظهور ---
-      tl.to(headingWrapRef.current, { y: 0, duration: 0.4 }, 0.55);
+      // بعدين الصندوق (العنوان) يرتفع لمكانه بالأعلى
+      tl.to(headingWrapRef.current, { y: 0, duration: 0.3 }, 0.5);
+
+      // وبعد ما يستقر بالأعلى، تظهر الفقرة تحته
+      tl.to(paragraphRef.current, { opacity: 1, duration: 0.2 }, 0.8);
 
       // --- المرحلة 2 (بعد الوحدة الأولى): كل شركة تاخذ وحدة كاملة، تظهر ثم تختفي للي بعدها ---
       cards.forEach((card, i) => {
@@ -116,7 +125,6 @@ export default function CompanyCoverflowSection() {
       className="relative h-screen w-full overflow-hidden bg-paper"
     >
       <div className="absolute inset-4 overflow-hidden rounded-[28px] bg-black md:inset-8">
-        <GlassFilterDefs />
         <LightStreakBackground />
 
         {/* أعمدة الأضواء المتوهجة (تظهر بالمقدمة ثم تختفي) */}
@@ -149,15 +157,21 @@ export default function CompanyCoverflowSection() {
           }}
         />
 
-        {/* العنوان: يبدأ بمنتصف الشاشة، وبعدين يرتفع لموقعه بالأعلى ويثبت هناك طول باقي السكرول */}
+        {/* العنوان: يبدأ بمنتصف الشاشة، وبعدين يرتفع لموقعه بالأعلى (تحت الهيدر) ويثبت هناك طول باقي السكرول */}
         <div
           ref={headingWrapRef}
-          className="absolute top-16 left-1/2 z-30 -translate-x-1/2 px-6 text-center opacity-0"
+          className="absolute top-28 left-1/2 z-30 -translate-x-1/2 px-6 text-center md:top-32"
         >
-          <h2 className="text-3xl font-semibold tracking-tight text-white md:text-5xl">
+          <h2
+            ref={titleRef}
+            className="text-3xl font-semibold tracking-tight text-white md:text-5xl"
+          >
             ﴍﻛﺎﺗﻨﺎ اﻟﺘﺎﺑﻌﺔ
           </h2>
-          <p className="font-arabic mx-auto mt-4 max-w-md text-sm text-white/50 md:text-base">
+          <p
+            ref={paragraphRef}
+            className="font-arabic mx-auto mt-4 max-w-md text-sm text-white/50 md:text-base"
+          >
             محفظة متنوعة من الشركات المبتكرة التي تدفع النمو عبر القطاعات المختلفة
           </p>
         </div>
@@ -195,7 +209,6 @@ export default function CompanyCoverflowSection() {
               style={{
                 backdropFilter: "blur(6px)",
                 WebkitBackdropFilter: "blur(6px)",
-                filter: "url(#liquid-glass)",
                 background: "rgba(255,255,255,0.04)",
               }}
             />
