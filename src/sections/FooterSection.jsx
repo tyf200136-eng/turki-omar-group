@@ -33,7 +33,7 @@ export default function FooterSection() {
     <footer className="relative mx-auto max-w-6xl px-6 pt-8 pb-16 md:px-12">
       <div className="rounded-[28px] bg-mist px-8 pt-12 pb-8 md:px-14 md:pt-16">
         <h3 className="mb-10 text-[13vw] leading-[0.9] font-bold tracking-tighter text-ink md:text-[6.2vw]">
-          Turki Omar Group
+          TURKI OMAR GROUP
         </h3>
 
         <div className="border-t border-line pt-6">

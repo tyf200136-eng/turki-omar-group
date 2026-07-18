@@ -1,7 +1,7 @@
 import { useEffect, useRef } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import HeroScene3D from "../components/HeroScene3D.jsx";
+import HeroScene3D from "./HeroScene3D.jsx";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -104,18 +104,19 @@ export default function HeroLogoSection() {
   return (
     <section
       ref={sectionRef}
+      id="hero"
       className="relative h-screen w-full overflow-hidden bg-paper"
     >
       {/* خلفية المشهد ثلاثي الأبعاد (شفافة، تكشف خلفية الصفحة) */}
       <HeroScene3D ref={sceneRef} className="absolute inset-0 z-0" />
 
-      {/* العنوان الافتتاحي — يتصغر ويرتفع ويختفي مع أول سكرول */}
+      {/* العنوان الافتتاحي — يجلس بأعلى الشاشة، فوق نص اللوقو الطالع من تحت */}
       <div
         ref={introRef}
-        className="pointer-events-none absolute inset-0 z-10 flex flex-col items-center justify-center px-6 text-center"
+        className="pointer-events-none absolute inset-0 z-10 flex flex-col items-center justify-start px-6 pt-24 text-center md:pt-32"
       >
         <h1 className="mb-4 text-4xl font-semibold tracking-tight text-ink md:text-6xl">
-          Turki Omar Group
+          مجموعة تركي عمر
         </h1>
         <p className="max-w-md text-base text-slate md:text-lg">
           الدقة طبيعتنا، والاستدامة جوهر عملنا
@@ -128,12 +129,12 @@ export default function HeroLogoSection() {
           ref={cardRef}
           className="relative w-full max-w-lg overflow-hidden rounded-3xl border border-white/15 shadow-2xl"
         >
-          <div className="absolute inset-0 bg-black/55" />
+          <div className="absolute inset-0 bg-black/28" />
           <div
             className="absolute inset-0"
             style={{
-              backdropFilter: "blur(26px)",
-              WebkitBackdropFilter: "blur(26px)",
+              backdropFilter: "blur(14px)",
+              WebkitBackdropFilter: "blur(14px)",
               filter: "url(#liquid-glass)",
             }}
           />
@@ -141,7 +142,7 @@ export default function HeroLogoSection() {
             className="absolute inset-0"
             style={{
               background:
-                "linear-gradient(160deg, rgba(255,255,255,0.14), rgba(255,255,255,0) 45%)",
+                "linear-gradient(160deg, rgba(255, 255, 255, 0.77), rgba(255, 255, 255, 0.42) 45%)",
             }}
           />
 

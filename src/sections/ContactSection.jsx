@@ -1,9 +1,104 @@
+import { useState } from "react";
 import { motion } from "framer-motion";
 
+const CONTACT_INFO = [
+  {
+    label: "البريد الإلكتروني",
+    value: "info@turkiomargroup.com",
+    href: "mailto:info@turkiomargroup.com",
+    icon: (
+      <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect x="3" y="5" width="18" height="14" rx="2" stroke="currentColor" strokeWidth="1.4" />
+        <path d="M4 6.5L12 13L20 6.5" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" />
+      </svg>
+    ),
+  },
+  {
+    label: "رقم الجوال",
+    value: "+966 5X XXX XXXX",
+    href: "tel:+9665XXXXXXXX",
+    icon: (
+      <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path
+          d="M6.5 4H9.5L11 8L8.8 9.5C9.6 11.3 11 12.7 12.8 13.5L14.3 11.3L18.3 12.8V15.8C18.3 17 17.3 18 16 17.9C10.8 17.5 6.5 13.2 6 8C5.9 6.7 5.3 5 6.5 4Z"
+          stroke="currentColor"
+          strokeWidth="1.4"
+          strokeLinejoin="round"
+        />
+      </svg>
+    ),
+  },
+  {
+   label: "العنوان",
+    value: "الطائف . المملكة العربية السعودية",
+    href: "https://maps.app.goo.gl/8TTAZB6KJo2T6M9N6",
+    icon: (
+
+      <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path
+          d="M12 21C12 21 19 14.5 19 9.5C19 5.9 15.9 3 12 3C8.1 3 5 5.9 5 9.5C5 14.5 12 21 12 21Z"
+          stroke="currentColor"
+          strokeWidth="1.4"
+          strokeLinejoin="round"
+        />
+        <circle cx="12" cy="9.5" r="2.5" stroke="currentColor" strokeWidth="1.4" />
+      </svg>
+    ),
+  },
+];
+
+const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
 export default function ContactSection() {
+  const [values, setValues] = useState({ name: "", email: "", message: "" });
+  const [errors, setErrors] = useState({});
+  const [status, setStatus] = useState(null); // null | "success"
+
+  function updateField(field, value) {
+    setValues((v) => ({ ...v, [field]: value }));
+    // بمجرد ما يبدأ يكتب صح، نشيل رسالة الخطأ عن هذا الحقل فورًا
+    if (errors[field]) {
+      setErrors((e) => ({ ...e, [field]: null }));
+    }
+  }
+
+  function validate() {
+    const next = {};
+    if (!values.name.trim()) {
+      next.name = "الاسم مطلوب";
+    }
+    if (!values.email.trim()) {
+      next.email = "البريد الإلكتروني مطلوب";
+    } else if (!EMAIL_RE.test(values.email.trim())) {
+      next.email = "صيغة البريد الإلكتروني غير صحيحة";
+    }
+    if (!values.message.trim()) {
+      next.message = "الرجاء كتابة رسالتك";
+    }
+    return next;
+  }
+
   function handleSubmit(e) {
     e.preventDefault();
+    const nextErrors = validate();
+    setErrors(nextErrors);
+
+    if (Object.keys(nextErrors).length > 0) {
+      setStatus(null);
+      return;
+    }
+
+    // TODO: هنا نربط لاحقًا خدمة إرسال فعلية (Formspree/Backend)
+    setStatus("success");
+    setValues({ name: "", email: "", message: "" });
   }
+
+  const fieldClass = (field) =>
+    `w-full rounded-full border bg-paper px-6 py-3.5 text-sm text-ink placeholder:text-slate-light focus:outline-none ${
+      errors[field]
+        ? "border-red-400 focus:border-red-500"
+        : "border-line focus:border-ink"
+    }`;
 
   return (
     <section className="relative mx-auto max-w-6xl px-6 pt-16 pb-8 md:px-12">
@@ -18,22 +113,50 @@ export default function ContactSection() {
               سواء كنت تدرس فرصة للشراكة أو ترغب ببساطة في معرفة المزيد عن المجموعة، يسعدنا دائماً تواصلك معنا.
             </p>
 
-            <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-              <input
-                type="text"
-                placeholder="الاسم الكامل"
-                className="w-full rounded-full border border-line bg-paper px-6 py-3.5 text-sm text-ink placeholder:text-slate-light focus:border-ink focus:outline-none"
-              />
-              <input
-                type="email"
-                placeholder="البريد الإلكتروني"
-                className="w-full rounded-full border border-line bg-paper px-6 py-3.5 text-sm text-ink placeholder:text-slate-light focus:border-ink focus:outline-none"
-              />
-              <textarea
-                placeholder="حدثنا عن مشروعك…"
-                rows={5}
-                className="w-full resize-none rounded-3xl border border-line bg-paper px-6 py-4 text-sm text-ink placeholder:text-slate-light focus:border-ink focus:outline-none"
-              />
+            <form onSubmit={handleSubmit} noValidate className="flex flex-col gap-1">
+              <div className="mb-3">
+                <input
+                  type="text"
+                  placeholder="الاسم الكامل"
+                  value={values.name}
+                  onChange={(e) => updateField("name", e.target.value)}
+                  className={fieldClass("name")}
+                />
+                {errors.name && (
+                  <p className="mt-1.5 mr-2 text-xs text-red-500">{errors.name}</p>
+                )}
+              </div>
+
+              <div className="mb-3">
+                <input
+                  type="email"
+                  placeholder="البريد الإلكتروني"
+                  value={values.email}
+                  onChange={(e) => updateField("email", e.target.value)}
+                  className={fieldClass("email")}
+                />
+                {errors.email && (
+                  <p className="mt-1.5 mr-2 text-xs text-red-500">{errors.email}</p>
+                )}
+              </div>
+
+              <div className="mb-3">
+                <textarea
+                  placeholder="حدثنا عن مشروعك…"
+                  rows={5}
+                  value={values.message}
+                  onChange={(e) => updateField("message", e.target.value)}
+                  className={`w-full resize-none rounded-3xl border bg-paper px-6 py-4 text-sm text-ink placeholder:text-slate-light focus:outline-none ${
+                    errors.message
+                      ? "border-red-400 focus:border-red-500"
+                      : "border-line focus:border-ink"
+                  }`}
+                />
+                {errors.message && (
+                  <p className="mt-1.5 mr-2 text-xs text-red-500">{errors.message}</p>
+                )}
+              </div>
+
               <motion.button
                 type="submit"
                 whileHover={{ scale: 1.015 }}
@@ -42,6 +165,16 @@ export default function ContactSection() {
               >
                 إرسال
               </motion.button>
+
+              {status === "success" && (
+                <p className="mt-3 text-center text-sm text-ink">
+                  تم استلام رسالتك، بنتواصل معك قريبًا.
+                </p>
+              )}
+
+              <p className="mt-3 text-center text-xs text-slate-light">
+                سوف نحافظ على خصوصية بياناتك
+              </p>
             </form>
           </div>
 
@@ -61,27 +194,30 @@ export default function ContactSection() {
               }}
             />
 
-            <motion.button
-              whileHover={{ scale: 1.03 }}
-              whileTap={{ scale: 0.97 }}
-              className="absolute bottom-5 left-5 flex items-center gap-2 rounded-full bg-black/45 px-5 py-3 text-xs font-medium text-white backdrop-blur-sm"
-            >
-              <svg
-                width="16"
-                height="16"
-                viewBox="0 0 24 24"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  d="M15 10.5V7a1 1 0 0 0-1-1H4a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h10a1 1 0 0 0 1-1v-3.5l4 3V7.5l-4 3Z"
-                  stroke="white"
-                  strokeWidth="1.4"
-                  strokeLinejoin="round"
-                />
-              </svg>
-              Book a Call
-            </motion.button>
+            <div className="relative flex h-full flex-col justify-center gap-10 p-8 md:p-10">
+              {CONTACT_INFO.map((item) => {
+                const Wrapper = item.href ? "a" : "div";
+                return (
+                  <Wrapper
+                    key={item.label}
+                    {...(item.href ? { href: item.href } : {})}
+                    className="group flex items-center gap-4"
+                  >
+                    <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-white/20 text-white transition-colors group-hover:border-white/50">
+                      <span className="h-5 w-5">{item.icon}</span>
+                    </span>
+                    <span className="flex flex-col">
+                      <span className="text-xs tracking-[0.15em] text-white/50 uppercase">
+                        {item.label}
+                      </span>
+                      <span className="text-base font-medium text-white md:text-lg">
+                        {item.value}
+                      </span>
+                    </span>
+                  </Wrapper>
+                );
+              })}
+            </div>
           </div>
         </div>
       </div>
