@@ -162,3 +162,16 @@ body {
 .icon-gear-small {
   animation: icon-gear-spin-ccw 9s linear infinite;
 }
+
+@keyframes icon-gear-spin-cw {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.icon-gear-spin {
+  animation: icon-gear-spin-cw 6s linear infinite;
+}

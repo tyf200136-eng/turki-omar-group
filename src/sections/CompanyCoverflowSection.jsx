@@ -207,17 +207,30 @@ export default function CompanyCoverflowSection() {
               }}
             />
 
-            <div className="relative z-10 flex h-full flex-col justify-start p-6 md:p-8">
-              <span className="mb-2 text-[11px] tracking-[0.25em] text-white/60 uppercase">
-                {c.sector}
-              </span>
-              <h3 className="mb-3 text-2xl font-semibold text-white md:text-3xl">
-                {c.name}
-              </h3>
-              <p className="max-w-xs text-sm leading-relaxed text-white/70">
-                {c.desc}
-              </p>
-            </div>
+<div className="relative z-10 flex h-full flex-col p-6 md:p-8">
+                <div>
+                  <span className="mb-2 block text-[11px] tracking-[0.25em] text-white/60 uppercase">
+                    {c.sector}
+                  </span>
+                  <h3 className="mb-3 text-2xl font-semibold text-white md:text-3xl">
+                    {c.name}
+                  </h3>
+                  <p className="max-w-xs text-sm leading-relaxed text-white/70">
+                    {c.desc}
+                  </p>
+                </div>
+
+                {/* مساحة اللوقو: تملأ الفراغ المتبقي بالكرت وتتمركز فيه */}
+                {c.logo && (
+                  <div className="mt-auto flex flex-1 items-center justify-center pt-6">
+                    <img
+                      src={c.logo}
+                      alt={c.name}
+                      className="max-h-28 w-auto object-contain opacity-90 md:max-h-36"
+                    />
+                  </div>
+                )}
+              </div>
           </div>
         ))}
       </div>
