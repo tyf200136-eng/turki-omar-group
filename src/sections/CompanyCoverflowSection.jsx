@@ -233,14 +233,18 @@ export default function CompanyCoverflowSection() {
                   </p>
                 </div>
 
-                {/* مساحة اللوقو: تملأ الفراغ المتبقي بالكرت وتتمركز فيه */}
+                {/* مساحة اللوقو: تملأ الفراغ المتبقي بالكرت وتتمركز فيه.
+                    لوحة بيضاء خلف اللوقو عشان النص الأسود يبين فوق الخلفية الغامقة
+                    بدون أي تغيير على ألوان اللوقو الأصلية */}
                 {c.logo && (
-                  <div className="mt-auto flex flex-1 items-center justify-center pt-6">
-                    <img
-                      src={c.logo}
-                      alt={c.name}
-                      className="max-h-28 w-auto object-contain opacity-90 md:max-h-36"
-                    />
+                  <div className="mt-auto flex flex-1 items-end justify-center pb-2">
+                    <div className="rounded-lg bg-white/85 px-5 py-3 backdrop-blur-sm">
+                      <img
+                        src={c.logo}
+                        alt={c.name}
+                        className="max-h-16 w-auto object-contain md:max-h-24"
+                      />
+                    </div>
                   </div>
                 )}
               </div>
