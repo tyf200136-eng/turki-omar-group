@@ -23,13 +23,11 @@ function buildPaths(count, position) {
 
 export default function GlobalBackground() {
   const linesRef = useRef(null);
+  const rightGroupRef = useRef(null);
+  const leftGroupRef = useRef(null);
   const pathsTlRef = useRef(null);
 
   useEffect(() => {
-    const isMobile = window.innerWidth < 768;
-    const count = isMobile ? 7 : 14;
-    const paths = [...buildPaths(count, 1), ...buildPaths(count, -1)];
-
     const ctx = gsap.context(() => {
       const pathEls = linesRef.current.querySelectorAll("path");
 
@@ -58,42 +56,82 @@ export default function GlobalBackground() {
       // نقيس مواقع الأقسام مباشرة من الـ DOM كل فريم بدل الاعتماد على start/end
       // محسوبة مسبقًا من ScrollTrigger، لأن أقسام الهيرو والشركات نفسها pinned
       // وتغيّر ارتفاع الصفحة ديناميكيًا — القياس المباشر أوثق وما يتصادم معها.
-      gsap.set(linesRef.current, { opacity: 0.15 });
+      gsap.set(linesRef.current, { opacity: 1 });
+      gsap.set([rightGroupRef.current, leftGroupRef.current], { opacity: 0.15 });
 
       const companies = document.getElementById("companies");
       const services = document.getElementById("services");
+      const approach = document.getElementById("approach");
+      const contact = document.getElementById("contact");
       let wasZero = false;
+
+      const clamp01 = (v) => Math.min(1, Math.max(0, v));
+      // تقدّم محلي داخل القسم نفسه (0→1) بالاعتماد على ارتفاعه الحالي هو فقط،
+      // مش على طول الصفحة الكلي. هذا يمنع مشكلة كروت الخدمات اللي تتمدد
+      // تدريجيًا وتخلي "طول الصفحة" يتغيّر لحظيًا ويشوّه أي حساب مبني عليه.
+      const localProgress = (rect, mid) =>
+        rect ? clamp01((mid - rect.top) / rect.height) : 0;
 
       const updateIntensity = () => {
         if (!companies || !services) return;
         const mid = window.innerHeight / 2;
         const cRect = companies.getBoundingClientRect();
         const sRect = services.getBoundingClientRect();
+        const aRect = approach?.getBoundingClientRect();
+        const ctRect = contact?.getBoundingClientRect();
 
-        let target;
+        // choreography اتجاهية: كل مجموعة (يمين/يسار) لها مسار شدة مستقل بدل ما
+        // تتحركا سوا بنفس الشدة — كل قسم كبير يعطي دور لجهة ويخفت الثانية
+        // (بدون ما تختفي بالكامل) عشان يصير له "توقيع" بصري خاص بدل التكرار.
+        let containerTarget = 1;
+        let rightTarget;
+        let leftTarget;
+
         if (cRect.top < mid && cRect.bottom > mid) {
-          target = 0;
+          containerTarget = 0; // قسم الشركات له خلفيته الخاصة
+          rightTarget = 0;
+          leftTarget = 0;
         } else if (sRect.top > mid) {
-          target = 0.15;
+          containerTarget = 0.15; // قبل الخدمات (الهيرو)
+          rightTarget = 0.15;
+          leftTarget = 0.15;
+        } else if (!aRect || aRect.top > mid) {
+          // داخل الخدمات: الجهتين متساويتين، تصعدان سوا
+          const v = 0.35 + localProgress(sRect, mid) * 0.2; // 0.35 → 0.55
+          rightTarget = v;
+          leftTarget = v;
+        } else if (!ctRect || ctRect.top > mid) {
+          // "لماذا نحن": اليمين ياخذ الدور ويتصاعد، اليسار يخفت (بدون اختفاء كامل)
+          const p = localProgress(aRect, mid);
+          rightTarget = 0.55 + p * 0.35; // 0.55 → 0.9
+          leftTarget = 0.55 - p * 0.4; // 0.55 → 0.15
         } else {
-          const vh = window.innerHeight;
-          const total = document.documentElement.scrollHeight - vh;
-          const startY = window.scrollY + sRect.top;
-          const progress =
-            total > startY
-              ? Math.min(1, Math.max(0, (window.scrollY - startY) / (total - startY)))
-              : 1;
-          target = 0.35 + progress * 0.55;
+          // من التواصل للفوتر: اليسار ياخذ الدور، اليمين يخفت لحضور خفيف بس
+          const p = localProgress(ctRect, mid);
+          leftTarget = 0.15 + p * 0.75; // 0.15 → 0.9
+          rightTarget = 0.9 - p * 0.75; // 0.9 → 0.15
         }
 
         gsap.to(linesRef.current, {
-          opacity: target,
+          opacity: containerTarget,
           duration: 0.4,
           ease: "sine.out",
           overwrite: true,
         });
+        gsap.to(rightGroupRef.current, {
+          opacity: rightTarget,
+          duration: 0.6,
+          ease: "sine.out",
+          overwrite: true,
+        });
+        gsap.to(leftGroupRef.current, {
+          opacity: leftTarget,
+          duration: 0.6,
+          ease: "sine.out",
+          overwrite: true,
+        });
 
-        const zeroNow = target === 0;
+        const zeroNow = containerTarget === 0;
         if (zeroNow && !wasZero) pathsTlRef.current?.pause();
         if (!zeroNow && wasZero) pathsTlRef.current?.play();
         wasZero = zeroNow;
@@ -121,7 +159,8 @@ export default function GlobalBackground() {
 
   const isMobileInit = typeof window !== "undefined" && window.innerWidth < 768;
   const initCount = isMobileInit ? 7 : 14;
-  const initialPaths = [...buildPaths(initCount, 1), ...buildPaths(initCount, -1)];
+  const rightPaths = buildPaths(initCount, 1);
+  const leftPaths = buildPaths(initCount, -1);
 
   return (
     <div className="pointer-events-none fixed inset-0 -z-10 overflow-hidden bg-paper">
@@ -156,15 +195,28 @@ export default function GlobalBackground() {
           preserveAspectRatio="xMidYMid slice"
           fill="none"
         >
-          {initialPaths.map((path) => (
-            <path
-              key={path.id}
-              d={path.d}
-              stroke="currentColor"
-              strokeWidth={path.width}
-              strokeOpacity={path.opacity}
-            />
-          ))}
+          <g ref={rightGroupRef}>
+            {rightPaths.map((path) => (
+              <path
+                key={path.id}
+                d={path.d}
+                stroke="currentColor"
+                strokeWidth={path.width}
+                strokeOpacity={path.opacity}
+              />
+            ))}
+          </g>
+          <g ref={leftGroupRef}>
+            {leftPaths.map((path) => (
+              <path
+                key={path.id}
+                d={path.d}
+                stroke="currentColor"
+                strokeWidth={path.width}
+                strokeOpacity={path.opacity}
+              />
+            ))}
+          </g>
         </svg>
       </div>
     </div>

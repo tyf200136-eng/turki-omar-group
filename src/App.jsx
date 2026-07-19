@@ -24,7 +24,9 @@ function App() {
         <div id="services">
           <ServicesSection />
         </div>
-        <ApproachSection />
+        <div id="approach">
+          <ApproachSection />
+        </div>
         <div id="contact">
           <ContactSection />
         </div>
