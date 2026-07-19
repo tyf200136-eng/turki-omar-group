@@ -4,25 +4,32 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 
 gsap.registerPlugin(ScrollTrigger);
 
+// GSAP يتجاهل transform-origin المكتوب بـ CSS على عناصر SVG ويستخدم (0,0) افتراضيًا،
+// فلازم نمرر transformOrigin صراحة لكل تحريك scale/rotate — هذي دوال مساعدة عامة لذلك
+const centerOrigin = (i, target) => {
+  const b = target.getBBox();
+  return `${b.x + b.width / 2}px ${b.y + b.height / 2}px`;
+};
+const attrOrigin = (attrX, attrY) => (i, target) =>
+  `${target.getAttribute(attrX)}px ${target.getAttribute(attrY)}px`;
+const bottomCenterOrigin = (i, target) => {
+  const b = target.getBBox();
+  return `${b.x + b.width / 2}px ${b.y + b.height}px`;
+};
+
 // --- الأيقونات: كل عنصر مهم عليه data-role عشان نقدر نحركه بشكل مخصص بعدين ---
 
 const IconStartupManagement = forwardRef((props, ref) => (
   <svg ref={ref} viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg" {...props}>
-    <g data-role="gear" style={{ transformOrigin: "50px 75px" }}>
-      <circle cx="50" cy="75" r="10" stroke="currentColor" strokeWidth="1.5" />
-      <path d="M50 60 L50 65 M50 85 L50 90 M35 75 L40 75 M60 75 L65 75 M40 65 L44 69 M56 81 L60 85 M40 85 L44 81 M56 69 L60 65" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+    <g data-role="building">
+      <path data-shade="1" data-opacity="0.32" d="M30 46 L42 36 L70 36 L58 46 Z" fill="currentColor" style={{ fillOpacity: 0 }} stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round" />
+      <path data-shade="1" data-opacity="0.22" d="M58 46 L70 36 L70 76 L58 86 Z" fill="currentColor" style={{ fillOpacity: 0 }} stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round" />
+      <path data-shade="1" data-opacity="0.12" d="M30 46 L58 46 L58 86 L30 86 Z" fill="currentColor" style={{ fillOpacity: 0 }} stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round" />
+      <path d="M37 55 H45 M37 63 H45 M37 71 H45 M48 55 H53 M48 63 H53" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" />
     </g>
-    <rect x="35" y="22" width="30" height="43" rx="2" stroke="currentColor" strokeWidth="1.5" />
-    <line x1="42" y1="30" x2="46" y2="30" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-    <line x1="42" y1="38" x2="46" y2="38" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-    <line x1="42" y1="46" x2="46" y2="46" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-    <line x1="54" y1="30" x2="58" y2="30" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-    <line x1="54" y1="38" x2="58" y2="38" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-    <line x1="54" y1="46" x2="58" y2="46" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-    <path d="M46 65 L46 58 L54 58 L54 65" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-    <g data-role="rocket">
-      <path d="M15 65 C 25 55, 30 35, 80 15" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-      <path d="M72 15 L80 15 L80 23" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+    <g data-role="gear" style={{ transformOrigin: "56px 26px" }}>
+      <circle cx="56" cy="26" r="9" stroke="currentColor" strokeWidth="1.5" />
+      <path d="M56 13 L56 17 M56 35 L56 39 M43 26 L47 26 M65 26 L69 26 M47 17 L50 20 M62 32 L65 35 M47 35 L50 32 M62 20 L65 17" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
     </g>
   </svg>
 ));
@@ -30,76 +37,82 @@ IconStartupManagement.displayName = "IconStartupManagement";
 
 const IconStrategicPartnerships = forwardRef((props, ref) => (
   <svg ref={ref} viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg" {...props}>
-    <path d="M15 35 H35 C35 27, 41 22, 47 22 C53 22, 59 27, 59 35 H65 V50 C58 50, 53 55, 53 62 C53 69, 58 74, 65 74 V80 H15 V35 Z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-    <path d="M85 65 H65 C65 73, 59 78, 53 78 C47 78, 41 73, 41 65 H35 V50 C42 50, 47 45, 47 38 C47 31, 42 26, 35 26 V20 H85 V65 Z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-    <path data-role="spark" d="M50 42 L52 47 L57 49 L52 51 L50 56 L48 51 L43 49 L48 47 Z" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round" style={{ transformOrigin: "50px 49px" }} />
+    <circle data-role="circle" data-shade="1" data-opacity="0.16" cx="38" cy="50" r="25" fill="currentColor" style={{ fillOpacity: 0 }} stroke="currentColor" strokeWidth="1.5" />
+    <circle data-role="circle" data-shade="1" data-opacity="0.16" cx="62" cy="50" r="25" fill="currentColor" style={{ fillOpacity: 0 }} stroke="currentColor" strokeWidth="1.5" />
+    <g data-role="link" style={{ transformOrigin: "50px 49px" }}>
+      <rect x="38" y="45" width="16" height="8" rx="4" transform="rotate(-40 46 49)" stroke="currentColor" strokeWidth="1.5" />
+      <rect x="46" y="45" width="16" height="8" rx="4" transform="rotate(-40 54 49)" stroke="currentColor" strokeWidth="1.5" />
+    </g>
   </svg>
 ));
 IconStrategicPartnerships.displayName = "IconStrategicPartnerships";
 
 const IconScalableOperations = forwardRef((props, ref) => (
   <svg ref={ref} viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg" {...props}>
-    <rect data-role="node" x="15" y="42" width="16" height="16" rx="2" stroke="currentColor" strokeWidth="1.5" />
-    <line x1="20" y1="50" x2="26" y2="50" stroke="currentColor" strokeWidth="1.5" />
     <g data-role="connector">
-      <path d="M31 50 L42 50" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-      <path d="M38 47 L41 50 L38 53" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+      <path d="M50 37 L50 23" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+      <path d="M47 28 L50 23 L53 28" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
     </g>
-    <circle data-role="node" cx="50" cy="50" r="8" stroke="currentColor" strokeWidth="1.5" />
-    <path d="M50 38 L50 42 M50 58 L50 62 M38 50 L42 50 M58 50 L62 50 M41 41 L44 44 M56 56 L59 59 M41 59 L44 56 M56 41 L59 44" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
     <g data-role="connector">
-      <path d="M58 50 L69 50" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-      <path d="M65 47 L68 50 L65 53" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+      <path d="M61 57 L73 65" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+      <path d="M69 60 L73 65 L67 66" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
     </g>
-    <rect data-role="node" x="69" y="42" width="16" height="16" rx="2" stroke="currentColor" strokeWidth="1.5" />
-    <path data-role="node" d="M74 38 H89 V53" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-    <path data-role="node" d="M79 34 H94 V49" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+    <g data-role="connector">
+      <path d="M39 57 L27 65" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+      <path d="M31 60 L27 65 L33 66" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+    </g>
+    <circle data-role="node" data-shade="1" data-opacity="0.24" cx="50" cy="50" r="13" fill="currentColor" style={{ fillOpacity: 0 }} stroke="currentColor" strokeWidth="1.6" />
+    <circle data-role="node" data-shade="1" data-opacity="0.16" cx="50" cy="16" r="7" fill="currentColor" style={{ fillOpacity: 0 }} stroke="currentColor" strokeWidth="1.5" />
+    <circle data-role="node" data-shade="1" data-opacity="0.16" cx="79" cy="70" r="7" fill="currentColor" style={{ fillOpacity: 0 }} stroke="currentColor" strokeWidth="1.5" />
+    <circle data-role="node" data-shade="1" data-opacity="0.16" cx="21" cy="70" r="7" fill="currentColor" style={{ fillOpacity: 0 }} stroke="currentColor" strokeWidth="1.5" />
   </svg>
 ));
 IconScalableOperations.displayName = "IconScalableOperations";
 
 const IconInvestmentGrowth = forwardRef((props, ref) => (
   <svg ref={ref} viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg" {...props}>
-    <path d="M15 80 C 35 80, 45 40, 85 20" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" />
-    <line data-role="bar" x1="30" y1="80" x2="30" y2="70" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" style={{ transformOrigin: "30px 80px" }} />
-    <line data-role="bar" x1="50" y1="80" x2="50" y2="50" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" style={{ transformOrigin: "50px 80px" }} />
-    <line data-role="bar" x1="70" y1="80" x2="70" y2="30" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" style={{ transformOrigin: "70px 80px" }} />
-    <circle data-role="node" cx="85" cy="20" r="3.5" stroke="currentColor" strokeWidth="1.5" style={{ transformOrigin: "85px 20px" }} />
-    <line x1="10" y1="80" x2="90" y2="80" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-    <path d="M40 65 L52 48 L65 35 L82 18" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-    <path d="M74 18 L82 18 L82 26" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+    <line x1="14" y1="85" x2="92" y2="85" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+    <g data-role="bar">
+      <path data-shade="1" data-opacity="0.14" d="M20 68 H34 V85 H20 Z" fill="currentColor" style={{ fillOpacity: 0 }} stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round" />
+      <path data-shade="1" data-opacity="0.26" d="M20 68 L25 62 L39 62 L34 68 Z" fill="currentColor" style={{ fillOpacity: 0 }} stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round" />
+    </g>
+    <g data-role="bar">
+      <path data-shade="1" data-opacity="0.14" d="M44 50 H58 V85 H44 Z" fill="currentColor" style={{ fillOpacity: 0 }} stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round" />
+      <path data-shade="1" data-opacity="0.26" d="M44 50 L49 44 L63 44 L58 50 Z" fill="currentColor" style={{ fillOpacity: 0 }} stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round" />
+    </g>
+    <g data-role="bar">
+      <path data-shade="1" data-opacity="0.14" d="M68 28 H82 V85 H68 Z" fill="currentColor" style={{ fillOpacity: 0 }} stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round" />
+      <path data-shade="1" data-opacity="0.26" d="M68 28 L73 22 L87 22 L82 28 Z" fill="currentColor" style={{ fillOpacity: 0 }} stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round" />
+    </g>
+    <path d="M27 63 L51 45 L75 23 L90 12" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
+    <path d="M82 12 L90 12 L90 20" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
+    <circle data-role="node" data-shade="1" data-opacity="0.3" cx="90" cy="12" r="3.5" fill="currentColor" style={{ fillOpacity: 0 }} stroke="currentColor" strokeWidth="1.5" />
   </svg>
 ));
 IconInvestmentGrowth.displayName = "IconInvestmentGrowth";
 
 const IconGovernanceOversight = forwardRef((props, ref) => (
   <svg ref={ref} viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg" {...props}>
-    <path data-role="shield" d="M25 20 H75 C75 20, 75 55, 50 78 C25 55, 25 20, 25 20 Z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" style={{ transformOrigin: "50px 20px" }} />
-    <g data-role="key">
-      <line x1="50" y1="30" x2="50" y2="62" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-      <line x1="42" y1="62" x2="58" y2="62" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-      <line x1="36" y1="36" x2="64" y2="36" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-      <path d="M36 36 L31 48 H41 L36 36 Z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-      <path d="M64 36 L59 48 H69 L64 36 Z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-    </g>
+    <path data-role="shield" data-shade="1" data-opacity="0.16" d="M25 20 H75 C75 20, 75 55, 50 78 C25 55, 25 20, 25 20 Z" fill="currentColor" style={{ fillOpacity: 0, transformOrigin: "50px 20px" }} stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+    <circle data-role="scan-ring" cx="50" cy="46" r="20" stroke="currentColor" strokeWidth="1" style={{ transformOrigin: "50px 46px" }} />
+    <path data-role="check" d="M36 47 L45 57 L66 31" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ transformOrigin: "50px 44px" }} />
   </svg>
 ));
 IconGovernanceOversight.displayName = "IconGovernanceOversight";
 
 const IconTechSolutions = forwardRef((props, ref) => (
   <svg ref={ref} viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg" {...props}>
-    <g data-role="frame" style={{ transformOrigin: "54px 40px" }}>
-      <path d="M50 18 C33 18, 30 35, 38 48 C42 53, 42 58, 42 63 H50" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-      <path d="M50 18 C62 18, 66 26, 64 34 M61 44 C60 48, 58 53, 58 63 H50" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-      <path d="M42 68 H58 M44 73 H56 M46 78 H54" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-      <path data-role="spark" d="M47 48 L50 38 L53 48" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+    <g data-role="bulb">
+      <path data-shade="1" data-opacity="0.18" d="M50 16 C36 16, 27 26, 27 39 C27 49, 33 54, 37 61 L37 68 H63 L63 61 C67 54, 73 49, 73 39 C73 26, 64 16, 50 16 Z" fill="currentColor" style={{ fillOpacity: 0 }} stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round" />
+      <path d="M41 73 H59 M43 78 H57 M45 83 H55" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+      <path data-role="spark" d="M50 30 L50 44 M42 37 L58 37 M45 45 L55 53 M55 45 L45 53" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" style={{ transformOrigin: "50px 41px" }} />
     </g>
-    <line data-role="pulseline" x1="50" y1="18" x2="70" y2="25" stroke="currentColor" strokeWidth="1" strokeLinecap="round" />
-    <circle data-role="node" cx="70" cy="25" r="2.5" stroke="currentColor" strokeWidth="1.5" />
-    <line data-role="pulseline" x1="64" y1="34" x2="74" y2="38" stroke="currentColor" strokeWidth="1" strokeLinecap="round" />
-    <circle data-role="node" cx="74" cy="38" r="2.5" stroke="currentColor" strokeWidth="1.5" />
-    <line data-role="pulseline" x1="61" y1="44" x2="71" y2="50" stroke="currentColor" strokeWidth="1" strokeLinecap="round" />
-    <circle data-role="node" cx="71" cy="50" r="2.5" stroke="currentColor" strokeWidth="1.5" />
+    <line data-role="pulseline" x1="55" y1="20" x2="72" y2="12" stroke="currentColor" strokeWidth="1" strokeLinecap="round" />
+    <circle data-role="node" cx="72" cy="12" r="2.5" stroke="currentColor" strokeWidth="1.5" />
+    <line data-role="pulseline" x1="63" y1="30" x2="82" y2="26" stroke="currentColor" strokeWidth="1" strokeLinecap="round" />
+    <circle data-role="node" cx="82" cy="26" r="2.5" stroke="currentColor" strokeWidth="1.5" />
+    <line data-role="pulseline" x1="65" y1="45" x2="84" y2="48" stroke="currentColor" strokeWidth="1" strokeLinecap="round" />
+    <circle data-role="node" cx="84" cy="48" r="2.5" stroke="currentColor" strokeWidth="1.5" />
   </svg>
 ));
 IconTechSolutions.displayName = "IconTechSolutions";
@@ -139,33 +152,23 @@ const SERVICES = [
 
 // المشاهد المخصصة لكل أيقونة — تشتغل مرة وحدة بعد ما يخلص الرسم، وتستمر لحالها للأبد
 const ICON_SCENES = [
-  // 0: تأسيس الشركات — الترس يدور، الصاروخ يرتفع ويستقر
+  // 0: تأسيس الشركات — الترس يدور فوق المبنى
   (svg) => {
     const gear = svg.querySelector('[data-role="gear"]');
-    const rocket = svg.querySelector('[data-role="rocket"]');
     if (gear) gear.classList.add("icon-gear-spin");
-    if (rocket) {
-      gsap.to(rocket, {
-        y: -3.5,
-        x: 1.5,
-        duration: 1.6,
-        ease: "sine.inOut",
-        yoyo: true,
-        repeat: -1,
-      });
-    }
   },
-  // 1: الشراكات — الشرارة/نقطة الربط تنبض وتكبر شوي
+  // 1: الشراكات — حلقة الربط تنبض وتكبر شوي عند نقطة تقاطع الدائرتين
   (svg) => {
-    const spark = svg.querySelector('[data-role="spark"]');
-    if (spark) {
-      gsap.to(spark, {
-        scale: 1.35,
-        opacity: 0.45,
+    const link = svg.querySelector('[data-role="link"]');
+    if (link) {
+      gsap.to(link, {
+        scale: 1.15,
+        opacity: 0.55,
         duration: 1,
         ease: "sine.inOut",
         yoyo: true,
         repeat: -1,
+        transformOrigin: "50px 49px",
       });
     }
   },
@@ -206,6 +209,7 @@ const ICON_SCENES = [
         yoyo: true,
         repeat: -1,
         stagger: 0.2,
+        transformOrigin: bottomCenterOrigin,
       });
     }
     if (node) {
@@ -215,13 +219,15 @@ const ICON_SCENES = [
         ease: "sine.inOut",
         yoyo: true,
         repeat: -1,
+        transformOrigin: "90px 12px",
       });
     }
   },
-  // 4: الحوكمة — الدرع يميل بهدوء، المفتاح ينبض
+  // 4: الحوكمة — الدرع يميل بهدوء، الحلقة تدور كرادار مراقبة مستمر، العلامة تنبض تأكيدًا
   (svg) => {
     const shield = svg.querySelector('[data-role="shield"]');
-    const key = svg.querySelector('[data-role="key"]');
+    const ring = svg.querySelector('[data-role="scan-ring"]');
+    const check = svg.querySelector('[data-role="check"]');
     if (shield) {
       gsap.to(shield, {
         rotate: 2.5,
@@ -229,28 +235,51 @@ const ICON_SCENES = [
         ease: "sine.inOut",
         yoyo: true,
         repeat: -1,
+        transformOrigin: "50px 20px",
       });
     }
-    if (key) {
-      gsap.to(key, {
-        opacity: 0.4,
-        duration: 1.4,
+    if (ring) {
+      ring.style.strokeDasharray = "3 5";
+      gsap.to(ring, {
+        rotation: 360,
+        duration: 7,
+        ease: "none",
+        repeat: -1,
+        transformOrigin: "50px 46px",
+      });
+    }
+    if (check) {
+      gsap.to(check, {
+        scale: 1.08,
+        duration: 1.6,
         ease: "sine.inOut",
         yoyo: true,
         repeat: -1,
+        transformOrigin: "50px 44px",
       });
     }
   },
-  // 5: الحلول التقنية — إشارات تسري بالخطوط، الإطار يتنفس بهدوء
+  // 5: الحلول التقنية — إشارات تسري بالخطوط، اللمبة تتنفس بهدوء، الدائرة الداخلية تومض
   (svg) => {
-    const frame = svg.querySelector('[data-role="frame"]');
+    const bulb = svg.querySelector('[data-role="bulb"]');
+    const spark = svg.querySelector('[data-role="spark"]');
     const nodes = svg.querySelectorAll('[data-role="node"]');
     const pulseLines = svg.querySelectorAll('[data-role="pulseline"]');
 
-    if (frame) {
-      gsap.to(frame, {
+    if (bulb) {
+      gsap.to(bulb, {
         scale: 1.03,
         duration: 2.6,
+        ease: "sine.inOut",
+        yoyo: true,
+        repeat: -1,
+        transformOrigin: centerOrigin,
+      });
+    }
+    if (spark) {
+      gsap.to(spark, {
+        opacity: 0.35,
+        duration: 1.1,
         ease: "sine.inOut",
         yoyo: true,
         repeat: -1,
@@ -293,6 +322,177 @@ export default function ServicesSection() {
   const iconRefs = useRef([]);
   const iconShapesRef = useRef([]);
   const progressLineRef = useRef(null);
+
+  // تفاعل hover مخصص لكل أيقونة — نبضة/انطلاقة سريعة إضافية فوق الحركة المستمرة الأساسية
+  const handleIconHoverEnter = (i) => {
+    const svg = iconRefs.current[i];
+    if (!svg) return;
+
+    if (i === 0) {
+      const building = svg.querySelector('[data-role="building"]');
+      const gear = svg.querySelector('[data-role="gear"]');
+      if (building)
+        gsap.to(building, {
+          scale: 1.04,
+          duration: 0.35,
+          ease: "power2.out",
+          transformOrigin: bottomCenterOrigin,
+        });
+      if (gear) gear.style.animationDuration = "1.4s";
+    } else if (i === 1) {
+      const circles = svg.querySelectorAll('[data-role="circle"]');
+      const link = svg.querySelector('[data-role="link"]');
+      if (circles.length)
+        gsap.to(circles, {
+          scale: 1.05,
+          duration: 0.3,
+          ease: "power2.out",
+          yoyo: true,
+          repeat: 1,
+          stagger: 0.05,
+          transformOrigin: centerOrigin,
+        });
+      if (link)
+        gsap.to(link, {
+          scale: 1.3,
+          duration: 0.35,
+          ease: "back.out(3)",
+          yoyo: true,
+          repeat: 1,
+          transformOrigin: "50px 49px",
+        });
+    } else if (i === 2) {
+      const nodes = svg.querySelectorAll('[data-role="node"]');
+      const connectors = svg.querySelectorAll('[data-role="connector"]');
+      if (nodes.length)
+        gsap.to(nodes, {
+          scale: 1.15,
+          duration: 0.3,
+          ease: "power2.out",
+          yoyo: true,
+          repeat: 1,
+          stagger: 0.06,
+          transformOrigin: centerOrigin,
+        });
+      if (connectors.length)
+        gsap.to(connectors, {
+          opacity: 0.25,
+          duration: 0.25,
+          ease: "power2.out",
+          yoyo: true,
+          repeat: 1,
+          stagger: 0.08,
+        });
+    } else if (i === 3) {
+      const bars = svg.querySelectorAll('[data-role="bar"]');
+      const node = svg.querySelector('[data-role="node"]');
+      if (bars.length)
+        gsap.to(bars, {
+          scaleY: 1.2,
+          duration: 0.35,
+          ease: "power2.out",
+          yoyo: true,
+          repeat: 1,
+          stagger: 0.06,
+          transformOrigin: bottomCenterOrigin,
+        });
+      if (node)
+        gsap.to(node, {
+          scale: 1.6,
+          duration: 0.3,
+          ease: "back.out(3)",
+          yoyo: true,
+          repeat: 1,
+          transformOrigin: "90px 12px",
+        });
+    } else if (i === 4) {
+      const shield = svg.querySelector('[data-role="shield"]');
+      const ring = svg.querySelector('[data-role="scan-ring"]');
+      const check = svg.querySelector('[data-role="check"]');
+      if (shield)
+        gsap.to(shield, {
+          scale: 1.04,
+          duration: 0.35,
+          ease: "power2.out",
+          transformOrigin: centerOrigin,
+        });
+      if (ring)
+        gsap.to(ring, {
+          scale: 1.18,
+          opacity: 0.5,
+          duration: 0.4,
+          ease: "power2.out",
+          yoyo: true,
+          repeat: 1,
+          transformOrigin: "50px 46px",
+        });
+      if (check)
+        gsap.to(check, {
+          scale: 1.2,
+          duration: 0.3,
+          ease: "back.out(3)",
+          yoyo: true,
+          repeat: 1,
+          transformOrigin: "50px 44px",
+        });
+    } else if (i === 5) {
+      const bulb = svg.querySelector('[data-role="bulb"]');
+      const nodes = svg.querySelectorAll('[data-role="node"]');
+      if (bulb)
+        gsap.to(bulb, {
+          scale: 1.08,
+          duration: 0.35,
+          ease: "power2.out",
+          transformOrigin: centerOrigin,
+        });
+      if (nodes.length)
+        gsap.to(nodes, {
+          scale: 1.4,
+          duration: 0.3,
+          ease: "back.out(3)",
+          yoyo: true,
+          repeat: 1,
+          stagger: 0.08,
+          transformOrigin: attrOrigin("cx", "cy"),
+        });
+    }
+  };
+
+  const handleIconHoverLeave = (i) => {
+    const svg = iconRefs.current[i];
+    if (!svg) return;
+
+    if (i === 0) {
+      const building = svg.querySelector('[data-role="building"]');
+      const gear = svg.querySelector('[data-role="gear"]');
+      if (building)
+        gsap.to(building, {
+          scale: 1,
+          duration: 0.35,
+          ease: "power2.out",
+          transformOrigin: bottomCenterOrigin,
+        });
+      if (gear) gear.style.animationDuration = "6s";
+    } else if (i === 4) {
+      const shield = svg.querySelector('[data-role="shield"]');
+      if (shield)
+        gsap.to(shield, {
+          scale: 1,
+          duration: 0.35,
+          ease: "power2.out",
+          transformOrigin: centerOrigin,
+        });
+    } else if (i === 5) {
+      const bulb = svg.querySelector('[data-role="bulb"]');
+      if (bulb)
+        gsap.to(bulb, {
+          scale: 1,
+          duration: 0.35,
+          ease: "power2.out",
+          transformOrigin: centerOrigin,
+        });
+    }
+  };
 
   useEffect(() => {
     const timeline = timelineRef.current;
@@ -371,6 +571,15 @@ export default function ServicesSection() {
 
             const tl = gsap.timeline({
               onComplete: () => {
+                const faces = svg.querySelectorAll("[data-shade]");
+                if (faces.length) {
+                  gsap.to(faces, {
+                    fillOpacity: (idx, el) => parseFloat(el.dataset.opacity) || 0.15,
+                    duration: 0.7,
+                    ease: "power2.out",
+                    stagger: 0.05,
+                  });
+                }
                 const scene = ICON_SCENES[i];
                 if (scene && svg) scene(svg);
               },
@@ -435,6 +644,8 @@ export default function ServicesSection() {
               <div
                 key={s.title}
                 ref={(el) => (cardRefs.current[i] = el)}
+                onMouseEnter={() => handleIconHoverEnter(i)}
+                onMouseLeave={() => handleIconHoverLeave(i)}
                 className={`relative md:w-[46%] text-right ${
                   isRight ? "md:mr-auto md:pr-10" : "md:ml-auto md:pl-10"
                 }`}
@@ -457,10 +668,10 @@ export default function ServicesSection() {
                     className="overflow-hidden transition-none"
                     style={{ height: "0em" }}
                   >
-                    <div className="mb-4 flex aspect-[16/10] w-full items-center justify-center rounded-2xl bg-mist">
+                    <div className="mb-4 flex h-40 w-full items-center justify-center rounded-2xl bg-mist">
                       <Icon
                         ref={(el) => (iconRefs.current[i] = el)}
-                        className="h-24 w-24 text-ink md:h-28 md:w-28"
+                        className="h-20 w-20 text-ink md:h-24 md:w-24"
                       />
                     </div>
                     <p className="max-w-sm text-sm leading-relaxed text-slate">

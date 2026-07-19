@@ -129,7 +129,7 @@ export default function HeroLogoSection() {
           ref={cardRef}
           className="relative w-full max-w-lg overflow-hidden rounded-3xl border border-white/15 shadow-2xl"
         >
-          <div className="absolute inset-0 bg-black/28" />
+          <div className="absolute inset-0 bg-black/45" />
           <div
             className="absolute inset-0"
             style={{
@@ -142,7 +142,7 @@ export default function HeroLogoSection() {
             className="absolute inset-0"
             style={{
               background:
-                "linear-gradient(160deg, rgba(255, 255, 255, 0.77), rgba(255, 255, 255, 0.42) 45%)",
+                "linear-gradient(160deg, rgba(255, 255, 255, 0.22), rgba(255, 255, 255, 0.06) 45%)",
             }}
           />
 

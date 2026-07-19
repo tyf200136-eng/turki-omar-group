@@ -1,7 +1,7 @@
 import { useEffect, useRef } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import LightStreakBackground from "../components/LightStreakBackground.jsx";
+import GlowaveCanvas from "../components/GlowaveCanvas.jsx";
 import companies from "../utils/companies.js";
 
 gsap.registerPlugin(ScrollTrigger);
@@ -31,6 +31,7 @@ export default function CompanyCoverflowSection() {
   const sectionRef = useRef(null);
   const barsWrapRef = useRef(null);
   const vignetteRef = useRef(null);
+  const waveRef = useRef(null);
   const headingWrapRef = useRef(null);
   const titleRef = useRef(null);
   const paragraphRef = useRef(null);
@@ -46,6 +47,7 @@ export default function CompanyCoverflowSection() {
 
       // الصندوق يبدأ بمنتصف الشاشة (مركزي)، والعنوان والفقرة كل واحد يظهر بلحظته الخاصة
       gsap.set(vignetteRef.current, { scaleX: 0 });
+      gsap.set(waveRef.current, { opacity: 0 });
       gsap.set(headingWrapRef.current, { y: "34vh" });
       gsap.set(titleRef.current, { opacity: 0 });
       gsap.set(paragraphRef.current, { opacity: 0 });
@@ -81,6 +83,7 @@ export default function CompanyCoverflowSection() {
       tl.to(titleRef.current, { opacity: 1, duration: 0.3 }, 0.1);
 
       tl.to(barsWrapRef.current, { opacity: 0, duration: 0.4 }, 0.45);
+      tl.to(waveRef.current, { opacity: 1, duration: 0.3 }, 0.85);
 
       // بعدين الصندوق (العنوان) يرتفع لمكانه بالأعلى
       tl.to(headingWrapRef.current, { y: 0, duration: 0.3 }, 0.5);
@@ -125,7 +128,9 @@ export default function CompanyCoverflowSection() {
       className="relative h-screen w-full overflow-hidden bg-paper"
     >
       <div className="absolute inset-4 overflow-hidden rounded-[28px] bg-black md:inset-8">
-        <LightStreakBackground />
+        <div ref={waveRef} className="absolute inset-0 z-10" style={{ opacity: 0 }}>
+          <GlowaveCanvas />
+        </div>
 
         {/* أعمدة الأضواء المتوهجة (تظهر بالمقدمة ثم تختفي) */}
         <div ref={barsWrapRef} className="absolute inset-0 z-0 flex items-end px-2">
@@ -183,16 +188,6 @@ export default function CompanyCoverflowSection() {
         className="absolute inset-0 z-20 flex h-full w-full items-center justify-center pt-44 md:pt-36"
         style={{ perspective: "1000px" }}
       >
-        {/* طبقة التوهج: ثابتة بمكانها، ما تتحرك ولا تدور ولا تصغر مع الكروت.
-            تمتد أفقيًا وراء مسار الكروت بالكامل (خط منتصف الشاشة) */}
-        <div
-          className="pointer-events-none absolute inset-x-0 top-1/2 z-0 h-[50vh] -translate-y-1/2 md:h-[58vh]"
-          style={{
-            background:
-              "radial-gradient(ellipse 60% 55% at 50% 50%, rgba(255,255,255,0.45) 0%, rgba(230,230,230,0.26) 30%, rgba(200,200,200,0.14) 50%, rgba(180,180,180,0.06) 68%, transparent 82%)",
-          }}
-        />
-
         {companies.map((c, i) => (
           <div
             key={c.name}
@@ -220,34 +215,54 @@ export default function CompanyCoverflowSection() {
               }}
             />
 
-<div className="relative z-10 flex h-full flex-col p-6 md:p-8">
-                <div>
-                  <span className="mb-2 block text-[11px] tracking-[0.25em] text-white/60 uppercase">
-                    {c.sector}
-                  </span>
-                  <h3 className="mb-3 text-2xl font-semibold text-white md:text-3xl">
-                    {c.name}
-                  </h3>
-                  <p className="max-w-xs text-sm leading-relaxed text-white/70">
-                    {c.desc}
-                  </p>
-                </div>
-
-                {/* مساحة اللوقو: تملأ الفراغ المتبقي بالكرت وتتمركز فيه.
-                    لوحة بيضاء خلف اللوقو عشان النص الأسود يبين فوق الخلفية الغامقة
-                    بدون أي تغيير على ألوان اللوقو الأصلية */}
-                {c.logo && (
-                  <div className="mt-auto flex flex-1 items-end justify-center pb-2">
-                    <div className="rounded-lg bg-white/85 px-5 py-3 backdrop-blur-sm">
-                      <img
-                        src={c.logo}
-                        alt={c.name}
-                        className="max-h-16 w-auto object-contain md:max-h-24"
-                      />
-                    </div>
-                  </div>
-                )}
+            <div className="relative z-10 flex h-full flex-col p-6 md:p-8">
+              <div>
+                <span className="mb-2 block text-[11px] tracking-[0.25em] text-white/60 uppercase">
+                  {c.sector}
+                </span>
+                <h3 className="mb-3 text-2xl font-semibold text-white md:text-3xl">
+                  {c.name}
+                </h3>
+                <p className="max-w-xs text-sm leading-relaxed text-white/70">
+                  {c.desc}
+                </p>
               </div>
+
+              {/* مساحة اللوقو: تتمركز بمنتصف الفراغ المتبقي بالكرت.
+                  لوحة بيضاوية زجاجية شفافة خلف اللوقو عشان النص الأسود يبين
+                  فوق الخلفية الغامقة بدون أي تغيير على ألوان اللوقو الأصلية */}
+              {c.logo && (
+                <div className="flex flex-1 items-center justify-center">
+                  <div
+                    className="relative overflow-hidden rounded-3xl px-8 py-4"
+                    style={{
+                      background:
+                        "linear-gradient(160deg, rgba(255,255,255,0.55) 0%, rgba(255,255,255,0.15) 55%, rgba(255,255,255,0.3) 100%)",
+                      boxShadow:
+                        "0 10px 26px rgba(0,0,0,0.35), inset 0 1px 1px rgba(255,255,255,0.6), inset 0 -8px 14px rgba(0,0,0,0.15)",
+                      border: "1px solid rgba(255,255,255,0.35)",
+                      backdropFilter: "blur(12px)",
+                      WebkitBackdropFilter: "blur(12px)",
+                    }}
+                  >
+                    {/* لمعة زجاجية بالأعلى تعطي إحساس ثلاثي الأبعاد */}
+                    <div
+                      className="pointer-events-none absolute inset-x-3 top-1 h-1/2 rounded-full opacity-60"
+                      style={{
+                        background:
+                          "linear-gradient(180deg, rgba(255,255,255,0.7) 0%, transparent 100%)",
+                        filter: "blur(2px)",
+                      }}
+                    />
+                    <img
+                      src={c.logo}
+                      alt={c.name}
+                      className="relative max-h-16 w-auto object-contain md:max-h-24"
+                    />
+                  </div>
+                </div>
+              )}
+            </div>
           </div>
         ))}
       </div>

@@ -39,6 +39,14 @@ const companies = [
     gradient:
       "linear-gradient(160deg, 160deg, #3a3a3a 0%, #1a1a1a 45%, #050505 100%)",
   },
+  {
+    name: "الطائف اورا | TAIF AURA",
+    sector: "الرعاية الصحية والمكملات الغذائية",
+    desc: "شركة سعودية رائدة متخصصة في تطوير وتقديم المكملات الغذائية والفيتامينات الطبيعية والعضوية بصناعة سعودية ومعايير عالية الجودة لتعزيز الصحة والنشاط.",
+    logo: "/logos/الطايف اورا.png",
+    gradient:
+      "linear-gradient(160deg, 160deg, #3a3a3a 0%, #1a1a1a 45%, #050505 100%)",
+  },
 ];
 
 export default companies;

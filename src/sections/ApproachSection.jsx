@@ -85,10 +85,10 @@ export default function ApproachSection() {
         <div className="mx-auto grid w-full max-w-6xl grid-cols-1 gap-16 px-6 md:grid-cols-2 md:gap-24 md:px-12">
           {/* العمود الشمال: البادج الثابت + العنوان اللي يتبدل مع كل خطوة */}
           <div>
-            <span className="mb-6 inline-block rounded-full bg-mist px-4 py-1.5 text-xs tracking-[0.2em] text-slate uppercase">
+            <span className="mb-4 block text-xs tracking-[0.3em] text-slate uppercase">
               لماذا نحن
             </span>
-            <h2 className="flex items-baseline gap-3 text-4xl font-semibold tracking-tight text-ink md:text-5xl">
+            <h2 className="flex items-baseline gap-3 text-4xl leading-snug font-semibold tracking-tight text-ink md:text-5xl md:leading-snug">
               <span className="text-slate-light">/</span>
               {REASONS[activeIndex].title}
             </h2>
