@@ -81,7 +81,7 @@ export default function ApproachSection() {
       className="relative"
       style={{ height: `${REASONS.length * 100}vh` }}
     >
-      <div className="sticky top-0 flex h-screen w-full items-center overflow-hidden">
+      <div className="sticky top-0 flex h-dvh w-full items-center overflow-hidden">
         <div className="mx-auto grid w-full max-w-6xl grid-cols-1 gap-16 px-6 md:grid-cols-2 md:gap-24 md:px-12">
           {/* العمود الشمال: البادج الثابت + العنوان اللي يتبدل مع كل خطوة */}
           <div>

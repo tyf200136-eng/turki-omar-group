@@ -43,7 +43,10 @@ export default function FooterSection() {
   return (
     <footer className="relative mx-auto max-w-6xl px-6 pt-8 pb-16 md:px-12">
       <div className="rounded-[40px] bg-gradient-to-b from-white to-[#ececec] px-8 pt-12 pb-8 shadow-[0_50px_100px_-30px_rgba(0,0,0,0.22),0_15px_35px_-15px_rgba(0,0,0,0.12),inset_0_1px_0_0_rgba(255,255,255,0.8)] md:px-14 md:pt-16">
-        <h3 className="mb-10 text-[13vw] leading-[0.9] font-bold tracking-tighter text-ink md:text-[6.2vw]">
+        <h3
+          className="mb-10 leading-[0.9] font-bold tracking-tighter text-ink"
+          style={{ fontSize: "clamp(2.2rem, 13vw, 6rem)" }}
+        >
           TURKI OMAR GROUP
         </h3>
 

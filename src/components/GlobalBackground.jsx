@@ -3,8 +3,13 @@ import { useEffect, useRef } from "react";
 // شبكة نقاط متصلة (particle network) — نفس فكرة مرجع "NeuralMesh"،
 // بس بلون مونوكروم واحد (أسود) يطابق هوية المجموعة بدل الألوان الحيوية،
 // وبدون حاجة لـ three.js أو WebGL — canvas عادي ثنائي الأبعاد وخفيف على الأداء.
-const AREA_DIVISOR = 15000; // كثافة النقاط (رقم أكبر = نقاط أقل)
+const AREA_DIVISOR = 15000; // كثافة النقاط على سطح المكتب (رقم أكبر = نقاط أقل)
 const MAX_PARTICLES = 90;
+// بالجوال: كثافة أقل وسقف أقل للنقاط — نفس فكرة الشبكة بس أخف على المعالج
+// والبطارية على أجهزة الجوال الحقيقية (الفحص O(n²) بين كل زوج نقاط مكلف)
+const MOBILE_AREA_DIVISOR = 26000;
+const MOBILE_MAX_PARTICLES = 40;
+const MOBILE_BREAKPOINT = 768;
 const BASE_LINK_DIST = 125; // أقصى مسافة يترسم فيها خط بين نقطتين
 const MOUSE_LINK_DIST = 150;
 const DOT_COLOR = "10,10,10"; // يطابق --color-ink
@@ -35,19 +40,24 @@ export default function GlobalBackground() {
     let running = true;
 
     const setupSize = () => {
-      const dpr = Math.min(window.devicePixelRatio || 1, 2);
       width = window.innerWidth;
       height = window.innerHeight;
+      const isMobile = width < MOBILE_BREAKPOINT;
+      // نقلل الدقة (DPR) بالجوال كمان — نفس عدد النقاط بدقة أوطأ يخفف عبء
+      // الرسم على الـ GPU/CPU بجهاز حقيقي بشكل ملحوظ
+      const dpr = Math.min(window.devicePixelRatio || 1, isMobile ? 1.5 : 2);
       canvas.width = width * dpr;
       canvas.height = height * dpr;
       ctx.setTransform(1, 0, 0, 1, 0, 0);
       ctx.scale(dpr, dpr);
 
+      const areaDivisor = isMobile ? MOBILE_AREA_DIVISOR : AREA_DIVISOR;
+      const maxParticles = isMobile ? MOBILE_MAX_PARTICLES : MAX_PARTICLES;
       const count = Math.min(
-        Math.round((width * height) / AREA_DIVISOR),
-        MAX_PARTICLES,
+        Math.round((width * height) / areaDivisor),
+        maxParticles,
       );
-      const target = Math.max(count, 18);
+      const target = Math.max(count, isMobile ? 12 : 18);
 
       if (particles.length < target) {
         for (let i = particles.length; i < target; i++) {

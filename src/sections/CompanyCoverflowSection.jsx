@@ -125,7 +125,7 @@ export default function CompanyCoverflowSection() {
   return (
     <section
       ref={sectionRef}
-      className="relative h-screen w-full overflow-hidden bg-paper"
+      className="relative h-dvh w-full overflow-hidden bg-paper"
     >
       <div className="absolute inset-4 overflow-hidden rounded-[28px] bg-black md:inset-8">
         <div ref={waveRef} className="absolute inset-0 z-10" style={{ opacity: 0 }}>

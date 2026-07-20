@@ -101,7 +101,7 @@ export default function HeroLogoSection() {
     <section
       ref={sectionRef}
       id="hero"
-      className="relative h-screen w-full overflow-hidden bg-paper"
+      className="relative h-dvh w-full overflow-hidden bg-paper"
     >
       {/* خلفية المشهد ثلاثي الأبعاد (شفافة، تكشف خلفية الصفحة) */}
       <HeroScene3D ref={sceneRef} className="absolute inset-0 z-0" />

@@ -1,6 +1,7 @@
 import useLenis from "./hooks/useLenis.js";
 import GlobalBackground from "./components/GlobalBackground.jsx";
 import Header from "./components/Header.jsx";
+import LogoIntro from "./components/LogoIntro.jsx";
 import HeroLogoSection from "./sections/HeroLogoSection.jsx";
 import CompanyCoverflowSection from "./sections/CompanyCoverflowSection.jsx";
 import ServicesSection from "./sections/ServicesSection.jsx";
@@ -14,6 +15,7 @@ function App() {
 
   return (
     <>
+      <LogoIntro />
       <GlobalBackground />
       <Header />
 

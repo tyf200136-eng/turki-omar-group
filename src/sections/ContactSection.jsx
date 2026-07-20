@@ -206,11 +206,11 @@ export default function ContactSection() {
                     <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-white/20 text-white transition-colors group-hover:border-white/50">
                       <span className="h-5 w-5">{item.icon}</span>
                     </span>
-                    <span className="flex flex-col">
+                    <span className="flex min-w-0 flex-col">
                       <span className="text-xs tracking-[0.15em] text-white/50 uppercase">
                         {item.label}
                       </span>
-                      <span className="text-base font-medium text-white md:text-lg">
+                      <span className="text-base font-medium break-words text-white md:text-lg">
                         {item.value}
                       </span>
                     </span>

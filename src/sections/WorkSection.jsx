@@ -55,7 +55,8 @@ export default function WorkSection() {
       <h3
         ref={headingRef}
         aria-hidden="true"
-        className="font-display pointer-events-none absolute inset-x-0 top-1/2 z-0 -translate-y-1/2 text-center text-[26vw] leading-none font-bold tracking-tighter whitespace-nowrap text-ink select-none md:text-[19vw]"
+        className="font-display pointer-events-none absolute inset-x-0 top-1/2 z-0 -translate-y-1/2 text-center leading-none font-bold tracking-tighter whitespace-nowrap text-ink select-none"
+        style={{ fontSize: "clamp(3.5rem, 19vw, 18rem)" }}
       >
         أعمالنا
       </h3>
