@@ -59,14 +59,14 @@ export default function Header() {
         />
 
         <div className="relative flex items-center justify-between px-6 py-2.5 text-ink md:px-8 md:py-3">
-          <div className="flex items-center gap-2.5">
+          <a href="#hero" className="flex items-center gap-2.5">
             {/* لوقو الشركة — يبقى بلونه الأصلي الأسود بدون أي فلتر */}
             <img
               src="/logos/logo-header.png"
               alt="Turki Omar Group"
               className="h-11 w-auto md:h-14"
             />
-          </div>
+          </a>
 
           <nav className="hidden items-center gap-8 text-sm text-ink/80 md:flex">
             <a href="#approach" className="transition-opacity hover:opacity-100">

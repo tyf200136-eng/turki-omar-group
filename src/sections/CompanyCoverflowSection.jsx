@@ -192,7 +192,7 @@ export default function CompanyCoverflowSection() {
           <div
             key={c.name}
             ref={(el) => (cardRefs.current[i] = el)}
-            className="absolute z-10 h-[52vh] w-[86vw] max-w-md overflow-hidden rounded-2xl md:h-[58vh] md:w-[36vw]"
+            className="absolute z-10 h-[42vh] w-[86vw] max-w-md overflow-hidden rounded-2xl md:h-[46vh] md:w-[36vw]"
             style={{
               transformStyle: "preserve-3d",
               boxShadow: "inset 0 0 2px 1px rgba(255,255,255,0.2)",
@@ -228,38 +228,54 @@ export default function CompanyCoverflowSection() {
                 </p>
               </div>
 
-              {/* مساحة اللوقو: تتمركز بمنتصف الفراغ المتبقي بالكرت.
-                  لوحة بيضاوية زجاجية شفافة خلف اللوقو عشان النص الأسود يبين
-                  فوق الخلفية الغامقة بدون أي تغيير على ألوان اللوقو الأصلية */}
+              {/* مساحة اللوقو: نفس الشفافية اللي ضبطتها بنفسك، بس صارت قابلة للنقر —
+                  تتحول لرابط <a> يفتح موقع الشركة بتبويب جديد إذا محدد لها website،
+                  وترجع div عادي (بدون تفاعل) إذا مافي رابط */}
               {c.logo && (
                 <div className="flex flex-1 items-center justify-center">
-                  <div
-                    className="relative overflow-hidden rounded-3xl px-8 py-4"
-                    style={{
-                      background:
-                        "linear-gradient(160deg, rgba(255,255,255,0.55) 0%, rgba(255,255,255,0.15) 55%, rgba(255,255,255,0.3) 100%)",
-                      boxShadow:
-                        "0 10px 26px rgba(0,0,0,0.35), inset 0 1px 1px rgba(255,255,255,0.6), inset 0 -8px 14px rgba(0,0,0,0.15)",
-                      border: "1px solid rgba(255,255,255,0.35)",
-                      backdropFilter: "blur(12px)",
-                      WebkitBackdropFilter: "blur(12px)",
-                    }}
-                  >
-                    {/* لمعة زجاجية بالأعلى تعطي إحساس ثلاثي الأبعاد */}
-                    <div
-                      className="pointer-events-none absolute inset-x-3 top-1 h-1/2 rounded-full opacity-60"
-                      style={{
-                        background:
-                          "linear-gradient(180deg, rgba(255,255,255,0.7) 0%, transparent 100%)",
-                        filter: "blur(2px)",
-                      }}
-                    />
-                    <img
-                      src={c.logo}
-                      alt={c.name}
-                      className="relative max-h-16 w-auto object-contain md:max-h-24"
-                    />
-                  </div>
+                  {(() => {
+                    const Wrapper = c.website ? "a" : "div";
+                    const wrapperProps = c.website
+                      ? {
+                          href: c.website,
+                          target: "_blank",
+                          rel: "noopener noreferrer",
+                          className:
+                            "block cursor-pointer transition-transform hover:scale-[1.03]",
+                        }
+                      : {};
+                    return (
+                      <Wrapper {...wrapperProps}>
+                        <div
+                          className="relative overflow-hidden rounded-3xl px-8 py-4"
+                          style={{
+                            background:
+                              "linear-gradient(160deg, rgba(255, 255, 255, 0.73) 0%, rgba(255,255,255,0.15) 55%, rgba(255,255,255,0.3) 100%)",
+                            boxShadow:
+                              "0 10px 26px rgba(0,0,0,0.35), inset 0 1px 1px rgba(255,255,255,0.6), inset 0 -8px 14px rgba(0,0,0,0.15)",
+                            border: "1px solid rgba(255,255,255,0.35)",
+                            backdropFilter: "blur(12px)",
+                            WebkitBackdropFilter: "blur(12px)",
+                          }}
+                        >
+                          {/* لمعة زجاجية بالأعلى تعطي إحساس ثلاثي الأبعاد */}
+                          <div
+                            className="pointer-events-none absolute inset-x-3 top-1 h-1/2 rounded-full opacity-60"
+                            style={{
+                              background:
+                                "linear-gradient(180deg, rgba(255,255,255,0.7) 0%, transparent 100%)",
+                              filter: "blur(2px)",
+                            }}
+                          />
+                          <img
+                            src={c.logo}
+                            alt={c.name}
+                            className="relative max-h-16 w-auto object-contain md:max-h-24"
+                          />
+                        </div>
+                      </Wrapper>
+                    );
+                  })()}
                 </div>
               )}
             </div>

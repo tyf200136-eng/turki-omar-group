@@ -1,166 +1,212 @@
 import { useEffect, useRef } from "react";
-import gsap from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
 
-gsap.registerPlugin(ScrollTrigger);
-
-// خطوط منحنية متدفقة — نفس فكرة "FloatingPaths" (مسارات SVG متعددة الطبقات)
-// بس معاد بناؤها بـ GSAP بدل framer-motion، ومونوكروم يطابق باقي هوية الموقع
-function buildPaths(count, position) {
-  return Array.from({ length: count }, (_, i) => ({
-    id: `${position}-${i}`,
-    d: `M-${380 - i * 5 * position} -${189 + i * 6}C-${
-      380 - i * 5 * position
-    } -${189 + i * 6} -${312 - i * 5 * position} ${216 - i * 6} ${
-      152 - i * 5 * position
-    } ${343 - i * 6}C${616 - i * 5 * position} ${470 - i * 6} ${
-      684 - i * 5 * position
-    } ${875 - i * 6} ${684 - i * 5 * position} ${875 - i * 6}`,
-    opacity: 0.08 + i * 0.025,
-    width: 0.5 + i * 0.03,
-  }));
-}
+// شبكة نقاط متصلة (particle network) — نفس فكرة مرجع "NeuralMesh"،
+// بس بلون مونوكروم واحد (أسود) يطابق هوية المجموعة بدل الألوان الحيوية،
+// وبدون حاجة لـ three.js أو WebGL — canvas عادي ثنائي الأبعاد وخفيف على الأداء.
+const AREA_DIVISOR = 15000; // كثافة النقاط (رقم أكبر = نقاط أقل)
+const MAX_PARTICLES = 90;
+const BASE_LINK_DIST = 125; // أقصى مسافة يترسم فيها خط بين نقطتين
+const MOUSE_LINK_DIST = 150;
+const DOT_COLOR = "10,10,10"; // يطابق --color-ink
 
 export default function GlobalBackground() {
-  const linesRef = useRef(null);
-  const rightGroupRef = useRef(null);
-  const leftGroupRef = useRef(null);
-  const pathsTlRef = useRef(null);
+  const canvasRef = useRef(null);
 
   useEffect(() => {
-    const ctx = gsap.context(() => {
-      const pathEls = linesRef.current.querySelectorAll("path");
+    const canvas = canvasRef.current;
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return;
 
-      // كل خط يرسم نفسه ببطء ويتنفس، بحلقة لا نهائية — نفس روح المرجع الأصلي
-      const tl = gsap.timeline({ repeat: -1 });
-      pathEls.forEach((el, i) => {
-        const len = el.getTotalLength();
-        el.style.strokeDasharray = `${len}`;
-        el.style.strokeDashoffset = `${len * 0.7}`;
-        tl.to(
-          el,
-          {
-            strokeDashoffset: -len * 0.3,
-            duration: 22 + (i % 7) * 2,
-            ease: "sine.inOut",
-            yoyo: true,
-            repeat: 1,
-          },
-          i * 0.15,
-        );
-      });
-      pathsTlRef.current = tl;
+    const prefersReducedMotion = window.matchMedia(
+      "(prefers-reduced-motion: reduce)",
+    ).matches;
 
-      // شدة الخلفية حسب القسم: خفيفة بالهيرو، صفر بقسم الشركات (خلفيته الخاصة غامقة)،
-      // وتتصاعد تدريجيًا من قسم الخدمات لين نهاية الصفحة.
-      // نقيس مواقع الأقسام مباشرة من الـ DOM كل فريم بدل الاعتماد على start/end
-      // محسوبة مسبقًا من ScrollTrigger، لأن أقسام الهيرو والشركات نفسها pinned
-      // وتغيّر ارتفاع الصفحة ديناميكيًا — القياس المباشر أوثق وما يتصادم معها.
-      gsap.set(linesRef.current, { opacity: 1 });
-      gsap.set([rightGroupRef.current, leftGroupRef.current], { opacity: 0.15 });
+    const companies = document.getElementById("companies");
+    const services = document.getElementById("services");
 
-      const companies = document.getElementById("companies");
-      const services = document.getElementById("services");
-      const approach = document.getElementById("approach");
-      const contact = document.getElementById("contact");
-      let wasZero = false;
+    const mouse = { x: -9999, y: -9999 };
+    let scrollEnergy = 0;
+    let targetOpacity = 0;
+    let displayOpacity = 0;
+    let particles = [];
+    let width = 0;
+    let height = 0;
+    let rafId = null;
+    let running = true;
 
-      const clamp01 = (v) => Math.min(1, Math.max(0, v));
-      // تقدّم محلي داخل القسم نفسه (0→1) بالاعتماد على ارتفاعه الحالي هو فقط،
-      // مش على طول الصفحة الكلي. هذا يمنع مشكلة كروت الخدمات اللي تتمدد
-      // تدريجيًا وتخلي "طول الصفحة" يتغيّر لحظيًا ويشوّه أي حساب مبني عليه.
-      const localProgress = (rect, mid) =>
-        rect ? clamp01((mid - rect.top) / rect.height) : 0;
+    const setupSize = () => {
+      const dpr = Math.min(window.devicePixelRatio || 1, 2);
+      width = window.innerWidth;
+      height = window.innerHeight;
+      canvas.width = width * dpr;
+      canvas.height = height * dpr;
+      ctx.setTransform(1, 0, 0, 1, 0, 0);
+      ctx.scale(dpr, dpr);
 
-      const updateIntensity = () => {
-        if (!companies || !services) return;
-        const mid = window.innerHeight / 2;
-        const cRect = companies.getBoundingClientRect();
-        const sRect = services.getBoundingClientRect();
-        const aRect = approach?.getBoundingClientRect();
-        const ctRect = contact?.getBoundingClientRect();
+      const count = Math.min(
+        Math.round((width * height) / AREA_DIVISOR),
+        MAX_PARTICLES,
+      );
+      const target = Math.max(count, 18);
 
-        // choreography اتجاهية: كل مجموعة (يمين/يسار) لها مسار شدة مستقل بدل ما
-        // تتحركا سوا بنفس الشدة — كل قسم كبير يعطي دور لجهة ويخفت الثانية
-        // (بدون ما تختفي بالكامل) عشان يصير له "توقيع" بصري خاص بدل التكرار.
-        let containerTarget = 1;
-        let rightTarget;
-        let leftTarget;
+      if (particles.length < target) {
+        for (let i = particles.length; i < target; i++) {
+          particles.push({
+            x: Math.random() * width,
+            y: Math.random() * height,
+            vx: (Math.random() - 0.5) * 0.45,
+            vy: (Math.random() - 0.5) * 0.45,
+            r: 1.5 + Math.random() * 0.5,
+          });
+        }
+      } else if (particles.length > target) {
+        particles = particles.slice(0, target);
+      }
+    };
+    setupSize();
+    window.addEventListener("resize", setupSize);
 
-        if (cRect.top < mid && cRect.bottom > mid) {
-          containerTarget = 0; // قسم الشركات له خلفيته الخاصة
-          rightTarget = 0;
-          leftTarget = 0;
-        } else if (sRect.top > mid) {
-          containerTarget = 0.15; // قبل الخدمات (الهيرو)
-          rightTarget = 0.15;
-          leftTarget = 0.15;
-        } else if (!aRect || aRect.top > mid) {
-          // داخل الخدمات: الجهتين متساويتين، تصعدان سوا
-          const v = 0.35 + localProgress(sRect, mid) * 0.2; // 0.35 → 0.55
-          rightTarget = v;
-          leftTarget = v;
-        } else if (!ctRect || ctRect.top > mid) {
-          // "لماذا نحن": اليمين ياخذ الدور ويتصاعد، اليسار يخفت (بدون اختفاء كامل)
-          const p = localProgress(aRect, mid);
-          rightTarget = 0.55 + p * 0.35; // 0.55 → 0.9
-          leftTarget = 0.55 - p * 0.4; // 0.55 → 0.15
-        } else {
-          // من التواصل للفوتر: اليسار ياخذ الدور، اليمين يخفت لحضور خفيف بس
-          const p = localProgress(ctRect, mid);
-          leftTarget = 0.15 + p * 0.75; // 0.15 → 0.9
-          rightTarget = 0.9 - p * 0.75; // 0.9 → 0.15
+    const handleMouseMove = (e) => {
+      mouse.x = e.clientX;
+      mouse.y = e.clientY;
+    };
+    const handleMouseLeave = () => {
+      mouse.x = -9999;
+      mouse.y = -9999;
+    };
+    if (!prefersReducedMotion) {
+      window.addEventListener("mousemove", handleMouseMove);
+      window.addEventListener("mouseleave", handleMouseLeave);
+    }
+
+    const handleScroll = () => {
+      if (!prefersReducedMotion) {
+        scrollEnergy = Math.min(scrollEnergy + 0.15, 1);
+      }
+    };
+    window.addEventListener("scroll", handleScroll, { passive: true });
+
+    const clamp01 = (v) => Math.min(1, Math.max(0, v));
+
+    // الشدة تتحدد حسب موقعك بالصفحة: صفر بالهيرو (يبقى اللوقو ثلاثي الأبعاد هو
+    // النجم بدون أي إزعاج خلفه) وصفر بالشركات (خلفيتها الخاصة الغامقة)،
+    // وتظهر بثبات من الخدمات لين الفوتر بدون ما تختفي أبد — نفس المرجع تمامًا
+    // (عندهم الشبكة مستثناة من قسم الهيرو لأن له فيديو خاص فيه).
+    const updateTargetOpacity = () => {
+      if (!companies || !services) {
+        targetOpacity = 0;
+        return;
+      }
+      const mid = window.innerHeight / 2;
+      const cRect = companies.getBoundingClientRect();
+      const sRect = services.getBoundingClientRect();
+
+      if (cRect.top < mid && cRect.bottom > mid) {
+        targetOpacity = 0; // قسم الشركات
+      } else if (sRect.top > mid) {
+        targetOpacity = 0; // الهيرو: مستثنى تمامًا
+      } else {
+        const p = clamp01((mid - sRect.top) / sRect.height);
+        targetOpacity = Math.min(1, 0.55 + p * 0.45); // يتصاعد بالخدمات ويثبت لين الفوتر
+      }
+    };
+
+    const loop = () => {
+      if (!running) return;
+      updateTargetOpacity();
+      displayOpacity += (targetOpacity - displayOpacity) * 0.05;
+
+      ctx.clearRect(0, 0, width, height);
+
+      if (displayOpacity > 0.01) {
+        scrollEnergy *= 0.94;
+        const linkDist = BASE_LINK_DIST + scrollEnergy * 45;
+        const energyBoost = 1 + scrollEnergy * 0.7;
+
+        particles.forEach((p) => {
+          p.x += p.vx;
+          p.y += p.vy;
+          if (p.x < 0) {
+            p.x = 0;
+            p.vx *= -1;
+          } else if (p.x > width) {
+            p.x = width;
+            p.vx *= -1;
+          }
+          if (p.y < 0) {
+            p.y = 0;
+            p.vy *= -1;
+          } else if (p.y > height) {
+            p.y = height;
+            p.vy *= -1;
+          }
+        });
+
+        for (let i = 0; i < particles.length; i++) {
+          const p1 = particles[i];
+
+          for (let j = i + 1; j < particles.length; j++) {
+            const p2 = particles[j];
+            const dx = p1.x - p2.x;
+            const dy = p1.y - p2.y;
+            const dist = Math.sqrt(dx * dx + dy * dy);
+            if (dist < linkDist) {
+              const alpha =
+                (1 - dist / linkDist) * 0.16 * energyBoost * displayOpacity;
+              ctx.beginPath();
+              ctx.strokeStyle = `rgba(${DOT_COLOR},${Math.min(alpha, 0.45)})`;
+              ctx.lineWidth = 1;
+              ctx.moveTo(p1.x, p1.y);
+              ctx.lineTo(p2.x, p2.y);
+              ctx.stroke();
+            }
+          }
+
+          if (mouse.x >= 0) {
+            const dxm = p1.x - mouse.x;
+            const dym = p1.y - mouse.y;
+            const dm = Math.sqrt(dxm * dxm + dym * dym);
+            if (dm < MOUSE_LINK_DIST) {
+              const alpha = (1 - dm / MOUSE_LINK_DIST) * 0.4 * displayOpacity;
+              ctx.beginPath();
+              ctx.strokeStyle = `rgba(${DOT_COLOR},${alpha})`;
+              ctx.lineWidth = 1.1;
+              ctx.moveTo(p1.x, p1.y);
+              ctx.lineTo(mouse.x, mouse.y);
+              ctx.stroke();
+            }
+          }
         }
 
-        gsap.to(linesRef.current, {
-          opacity: containerTarget,
-          duration: 0.4,
-          ease: "sine.out",
-          overwrite: true,
+        particles.forEach((p) => {
+          ctx.beginPath();
+          ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+          ctx.fillStyle = `rgba(${DOT_COLOR},${0.45 * displayOpacity})`;
+          ctx.fill();
         });
-        gsap.to(rightGroupRef.current, {
-          opacity: rightTarget,
-          duration: 0.6,
-          ease: "sine.out",
-          overwrite: true,
-        });
-        gsap.to(leftGroupRef.current, {
-          opacity: leftTarget,
-          duration: 0.6,
-          ease: "sine.out",
-          overwrite: true,
-        });
+      }
 
-        const zeroNow = containerTarget === 0;
-        if (zeroNow && !wasZero) pathsTlRef.current?.pause();
-        if (!zeroNow && wasZero) pathsTlRef.current?.play();
-        wasZero = zeroNow;
-      };
+      rafId = requestAnimationFrame(loop);
+    };
 
-      gsap.ticker.add(updateIntensity);
+    if (prefersReducedMotion) {
+      // إطار ثابت واحد بدون حلقة تحريك — احترامًا لتفضيل تقليل الحركة
+      updateTargetOpacity();
+      displayOpacity = targetOpacity;
+      ctx.clearRect(0, 0, width, height);
+    } else {
+      loop();
+    }
 
-      const handleVisibility = () => {
-        if (document.hidden) {
-          pathsTlRef.current?.pause();
-        } else if (linesRef.current && gsap.getProperty(linesRef.current, "opacity") > 0) {
-          pathsTlRef.current?.play();
-        }
-      };
-      document.addEventListener("visibilitychange", handleVisibility);
-
-      return () => {
-        gsap.ticker.remove(updateIntensity);
-        document.removeEventListener("visibilitychange", handleVisibility);
-      };
-    });
-
-    return () => ctx.revert();
+    return () => {
+      running = false;
+      window.removeEventListener("resize", setupSize);
+      window.removeEventListener("scroll", handleScroll);
+      window.removeEventListener("mousemove", handleMouseMove);
+      window.removeEventListener("mouseleave", handleMouseLeave);
+      if (rafId) cancelAnimationFrame(rafId);
+    };
   }, []);
-
-  const isMobileInit = typeof window !== "undefined" && window.innerWidth < 768;
-  const initCount = isMobileInit ? 7 : 14;
-  const rightPaths = buildPaths(initCount, 1);
-  const leftPaths = buildPaths(initCount, -1);
 
   return (
     <div className="pointer-events-none fixed inset-0 -z-10 overflow-hidden bg-paper">
@@ -188,37 +234,7 @@ export default function GlobalBackground() {
         }}
       />
 
-      <div ref={linesRef} className="absolute inset-0 text-ink">
-        <svg
-          className="h-full w-full"
-          viewBox="0 0 696 316"
-          preserveAspectRatio="xMidYMid slice"
-          fill="none"
-        >
-          <g ref={rightGroupRef}>
-            {rightPaths.map((path) => (
-              <path
-                key={path.id}
-                d={path.d}
-                stroke="currentColor"
-                strokeWidth={path.width}
-                strokeOpacity={path.opacity}
-              />
-            ))}
-          </g>
-          <g ref={leftGroupRef}>
-            {leftPaths.map((path) => (
-              <path
-                key={path.id}
-                d={path.d}
-                stroke="currentColor"
-                strokeWidth={path.width}
-                strokeOpacity={path.opacity}
-              />
-            ))}
-          </g>
-        </svg>
-      </div>
+      <canvas ref={canvasRef} className="absolute inset-0 h-full w-full" />
     </div>
   );
 }

@@ -15,8 +15,8 @@ const CONTACT_INFO = [
   },
   {
     label: "رقم الجوال",
-    value: "+966 5X XXX XXXX",
-    href: "tel:+9665XXXXXXXX",
+    value: "0559793959",
+    href: "tel:+966559793959",
     icon: (
       <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
         <path
@@ -31,7 +31,7 @@ const CONTACT_INFO = [
   {
    label: "العنوان",
     value: "الطائف . المملكة العربية السعودية",
-    href: "https://maps.app.goo.gl/8TTAZB6KJo2T6M9N6",
+    href: "https://maps.app.goo.gl/UfVugJdbHCpoiVs2A?g_st=com.google.maps.preview.copy",
     icon: (
 
       <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -102,7 +102,7 @@ export default function ContactSection() {
 
   return (
     <section className="relative mx-auto max-w-6xl px-6 pt-16 pb-8 md:px-12">
-      <div className="rounded-[28px] bg-mist p-8 md:p-14">
+    <div className="rounded-[40px] bg-gradient-to-b from-white to-[#ececec] p-8 shadow-[0_50px_100px_-30px_rgba(0,0,0,0.22),0_15px_35px_-15px_rgba(0,0,0,0.12),inset_0_1px_0_0_rgba(255,255,255,0.8)] md:p-14">
         <div className="grid grid-cols-1 gap-12 md:grid-cols-2 md:gap-16">
           <div>
             <h2 className="mb-4 text-3xl font-semibold tracking-tight text-ink md:text-4xl">

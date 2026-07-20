@@ -142,7 +142,7 @@ export default function HeroLogoSection() {
             className="absolute inset-0"
             style={{
               background:
-                "linear-gradient(160deg, rgba(255, 255, 255, 0.22), rgba(255, 255, 255, 0.06) 45%)",
+                "linear-gradient(160deg, rgba(255, 255, 255, 0.4), rgba(255, 255, 255, 0.06) 45%)",
             }}
           />
 
