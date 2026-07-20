@@ -69,14 +69,17 @@ export default function Header() {
           </a>
 
           <nav className="hidden items-center gap-8 text-sm text-ink/80 md:flex">
-            <a href="#approach" className="transition-opacity hover:opacity-100">
-              لماذا نحن
-            </a>
             <a href="#companies" className="transition-opacity hover:opacity-100">
               شركاتنا
             </a>
             <a href="#services" className="transition-opacity hover:opacity-100">
               خدماتنا
+            </a>
+            <a href="#approach" className="transition-opacity hover:opacity-100">
+              لماذا نحن
+            </a>
+            <a href="#work" className="transition-opacity hover:opacity-100">
+             أعمالنا
             </a>
             <a href="#contact" className="transition-opacity hover:opacity-100">
               اتصل بنا

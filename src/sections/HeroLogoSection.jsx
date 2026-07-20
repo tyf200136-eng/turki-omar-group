@@ -29,7 +29,6 @@ export default function HeroLogoSection() {
   const introRef = useRef(null);
   const cardRef = useRef(null);
   const textRefs = useRef([]);
-  const progressDotRef = useRef(null);
 
   useEffect(() => {
     const section = sectionRef.current;
@@ -48,9 +47,6 @@ export default function HeroLogoSection() {
           anticipatePin: 1,
           onUpdate: (self) => {
             sceneRef.current?.setProgress(self.progress);
-            if (progressDotRef.current) {
-              progressDotRef.current.style.top = `${self.progress * 100}%`;
-            }
           },
         },
       });
@@ -163,15 +159,6 @@ export default function HeroLogoSection() {
             ))}
           </div>
         </div>
-      </div>
-
-      {/* مؤشر تقدم جانبي (يمين الشاشة) */}
-      <div className="pointer-events-none absolute top-1/2 right-8 z-10 hidden h-40 w-px -translate-y-1/2 bg-line md:block">
-        <div
-          ref={progressDotRef}
-          className="absolute right-1/2 h-2 w-2 -translate-x-1/2 -translate-y-1/2 rounded-full bg-ink"
-          style={{ top: "0%" }}
-        />
       </div>
 
       <div className="absolute bottom-8 left-1/2 z-10 -translate-x-1/2 text-xs tracking-[0.3em] text-slate-light uppercase">
