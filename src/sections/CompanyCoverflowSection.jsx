@@ -175,7 +175,8 @@ export default function CompanyCoverflowSection() {
           </h2>
           <p
             ref={paragraphRef}
-            className="font-arabic mx-auto mt-4 max-w-md text-sm text-white/50 md:text-base"
+            className="font-arabic mx-auto mt-4 max-w-[80vw] text-sm text-white/50 md:max-w-md md:text-base"
+            style={{ textShadow: "0 2px 10px rgba(0,0,0,0.8)" }}
           >
             محفظة متنوعة من الشركات المبتكرة التي تدفع النمو عبر القطاعات المختلفة
           </p>
@@ -185,7 +186,7 @@ export default function CompanyCoverflowSection() {
       {/* الكروت: برا الصندوق الأسود المدوّر تمامًا — تتحرك بعرض الشاشة الحقيقي
           بدون أي قص، فتدخل/تطلع من خارج حدود الشاشة زي المرجع */}
       <div
-        className="absolute inset-0 z-20 flex h-full w-full items-center justify-center pt-44 md:pt-36"
+        className="absolute inset-0 z-20 flex h-full w-full items-center justify-center pt-60 md:pt-36"
         style={{ perspective: "1000px" }}
       >
         {companies.map((c, i) => (
@@ -272,6 +273,28 @@ export default function CompanyCoverflowSection() {
                             alt={c.name}
                             className="relative max-h-16 w-auto object-contain md:max-h-24"
                           />
+
+                          {/* شارة صغيرة ثابتة توضح إن اللوقو قابل للضغط ويودي لموقع الشركة */}
+                          {c.website && (
+                            <span
+                              className="absolute top-2 left-2 z-10 flex h-6 w-6 items-center justify-center rounded-full bg-black/70 text-white shadow-md"
+                              aria-hidden="true"
+                            >
+                              <svg
+                                width="12"
+                                height="12"
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="currentColor"
+                                strokeWidth="2.5"
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                              >
+                                <path d="M7 17 17 7" />
+                                <path d="M8 7h9v9" />
+                              </svg>
+                            </span>
+                          )}
                         </div>
                       </Wrapper>
                     );
