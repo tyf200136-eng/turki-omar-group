@@ -165,7 +165,7 @@ export default function CompanyCoverflowSection() {
         {/* العنوان: يبدأ بمنتصف الشاشة، وبعدين يرتفع لموقعه بالأعلى (تحت الهيدر) ويثبت هناك طول باقي السكرول */}
         <div
           ref={headingWrapRef}
-          className="absolute top-28 left-1/2 z-30 -translate-x-1/2 px-6 text-center md:top-32"
+          className="absolute top-28 left-1/2 z-30 w-[92vw] -translate-x-1/2 px-2 text-center md:top-32 md:w-auto md:px-6"
         >
           <h2
             ref={titleRef}
@@ -175,7 +175,7 @@ export default function CompanyCoverflowSection() {
           </h2>
           <p
             ref={paragraphRef}
-            className="font-arabic mx-auto mt-4 max-w-[80vw] text-sm text-white/50 md:max-w-md md:text-base"
+            className="font-arabic mx-auto mt-4 max-w-none text-balance text-sm text-white/50 md:max-w-md md:text-base"
             style={{ textShadow: "0 2px 10px rgba(0,0,0,0.8)" }}
           >
             محفظة متنوعة من الشركات المبتكرة التي تدفع النمو عبر القطاعات المختلفة
