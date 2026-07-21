@@ -1,30 +1,17 @@
 import { useEffect, useRef, useState } from "react";
 import gsap from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
 
-// شاشة تمهيدية (Intro) تظهر مرة وحدة بس بأول تحميل للموقع: اللوقو يترسم
-// (الخطوط المنحنية أولاً بتقنية stroke-dasharray)، وبعدين الأشكال المصمتة
-// (النص + النقاط) تظهر بالتدريج فوقها، وأخيرًا الشاشة كلها تختفي وتكشف الهيرو.
+gsap.registerPlugin(ScrollTrigger);
+
+// شاشة تمهيدية (Intro) تظهر بكل رفرش: اللوقو يترسم (الخطوط المنحنية أولاً
+// بتقنية stroke-dasharray)، وبعدين الأشكال المصمتة (النص + النقاط) تظهر
+// بالتدريج فوقها. قبل ما تختفي الشاشة، نسكرول تلقائيًا بقسم الهيرو لين نتخطى
+// مرحلة "السلوقن" (اسم الشركة والعنوان الكبير) ونوصل مباشرة للوقو الظاهر خلفه.
 export default function LogoIntro() {
   const containerRef = useRef(null);
   const svgRef = useRef(null);
-  const [show, setShow] = useState(false);
-
-  useEffect(() => {
-    // تظهر مرة وحدة بس بكل جلسة تصفح (مو كل ما تتنقل أو تعمل reload جوه نفس التبويب)
-    const alreadySeen = sessionStorage.getItem("introSeen");
-    if (alreadySeen) return;
-
-    const prefersReducedMotion = window.matchMedia(
-      "(prefers-reduced-motion: reduce)",
-    ).matches;
-
-    if (prefersReducedMotion) {
-      sessionStorage.setItem("introSeen", "1");
-      return;
-    }
-
-    setShow(true);
-  }, []);
+  const [show, setShow] = useState(true);
 
   useEffect(() => {
     if (!show) return;
@@ -53,7 +40,6 @@ export default function LogoIntro() {
 
     const tl = gsap.timeline({
       onComplete: () => {
-        sessionStorage.setItem("introSeen", "1");
         document.body.style.overflow = "";
         setShow(false);
       },
@@ -80,12 +66,19 @@ export default function LogoIntro() {
       "-=0.5",
     );
 
-    // 3) وقفة قصيرة ثم تلاشي الشاشة كاملة وكشف الهيرو
+    // نتأكد إن الصفحة بأعلاها (السلوقن) قبل لا نبدأ — بعض المتصفحات ترجع
+    // نفس موضع السكرول القديم بعد الريفرش، وإحنا نبيها دايمًا تبدأ من الصفر
+    window.scrollTo(0, 0);
+    if (window.__lenis) window.__lenis.scrollTo(0, { immediate: true });
+
+    // 3) وقفة قصيرة ثم تلاشي الشاشة كاملة وكشف الهيرو — يبين بحالته الطبيعية
+    // (اسم الشركة والسلوقن "الدقة طبيعتنا، والاستدامة جوهر عملنا")، مو الكرت
+    // اللي يجي بعده لما تسوي سكرول
     tl.to(container, {
       opacity: 0,
       duration: 0.6,
       ease: "power2.inOut",
-      delay: 0.5,
+      delay: 0.3,
     });
 
     return () => {

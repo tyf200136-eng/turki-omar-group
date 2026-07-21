@@ -15,6 +15,10 @@ export default function useLenis() {
       touchMultiplier: 1.2,
     });
 
+    // نعرّض الـ instance عالميًا عشان مكونات ثانية (زي شاشة الإنترو) تقدر
+    // تتحكم بموضع السكرول برمجيًا بدون ما تكسر تزامنه مع Lenis
+    window.__lenis = lenis;
+
     lenis.on("scroll", ScrollTrigger.update);
 
     const update = (time) => {
@@ -55,6 +59,7 @@ export default function useLenis() {
       window.removeEventListener("resize", handleResize);
       window.removeEventListener("orientationchange", handleResize);
       lenis.destroy();
+      window.__lenis = null;
       gsap.ticker.remove(update);
     };
   }, []);
