@@ -119,13 +119,29 @@ export default function CompanyCoverflowSection() {
       });
     }, section);
 
-    return () => ctx.revert();
+    // إعادة حساب أبعاد الـ ScrollTrigger عند تغيّر حجم النافذة الفعلي
+    // (تدوير الجهاز، أو تغيّر شريط عنوان المتصفح بالجوال) — هذا يمنع
+    // اختلال حساب مواقع/أحجام الكروت اللي كانت تسبب "البوكس ما يصغر"
+    let resizeTimer;
+    const handleResize = () => {
+      clearTimeout(resizeTimer);
+      resizeTimer = setTimeout(() => ScrollTrigger.refresh(), 150);
+    };
+    window.addEventListener("resize", handleResize);
+    window.addEventListener("orientationchange", handleResize);
+
+    return () => {
+      ctx.revert();
+      window.removeEventListener("resize", handleResize);
+      window.removeEventListener("orientationchange", handleResize);
+      clearTimeout(resizeTimer);
+    };
   }, []);
 
   return (
     <section
       ref={sectionRef}
-      className="relative h-dvh w-full overflow-hidden bg-paper"
+      className="relative h-[100svh] w-full overflow-hidden bg-paper"
     >
       <div className="absolute inset-4 overflow-hidden rounded-[28px] bg-black md:inset-8">
         <div ref={waveRef} className="absolute inset-0 z-10" style={{ opacity: 0 }}>
@@ -165,7 +181,7 @@ export default function CompanyCoverflowSection() {
         {/* العنوان: يبدأ بمنتصف الشاشة، وبعدين يرتفع لموقعه بالأعلى (تحت الهيدر) ويثبت هناك طول باقي السكرول */}
         <div
           ref={headingWrapRef}
-          className="absolute top-28 left-1/2 z-30 w-[92vw] -translate-x-1/2 px-2 text-center md:top-32 md:w-auto md:px-6"
+          className="absolute top-[clamp(88px,14svh,140px)] left-1/2 z-30 w-[92vw] -translate-x-1/2 px-2 text-center md:w-auto md:px-6"
         >
           <h2
             ref={titleRef}
@@ -186,14 +202,14 @@ export default function CompanyCoverflowSection() {
       {/* الكروت: برا الصندوق الأسود المدوّر تمامًا — تتحرك بعرض الشاشة الحقيقي
           بدون أي قص، فتدخل/تطلع من خارج حدود الشاشة زي المرجع */}
       <div
-        className="absolute inset-0 z-20 flex h-full w-full items-center justify-center pt-60 md:pt-36"
+        className="absolute inset-0 z-20 flex h-full w-full items-center justify-center pt-[clamp(190px,32svh,260px)] md:pt-[clamp(150px,20svh,200px)]"
         style={{ perspective: "1000px" }}
       >
         {companies.map((c, i) => (
           <div
             key={c.name}
             ref={(el) => (cardRefs.current[i] = el)}
-            className="absolute z-10 h-[42vh] w-[86vw] max-w-md overflow-hidden rounded-2xl md:h-[46vh] md:w-[36vw]"
+            className="absolute z-10 h-[clamp(300px,42svh,480px)] w-[min(86vw,26rem)] overflow-hidden rounded-2xl md:h-[clamp(340px,46svh,520px)] md:w-[clamp(320px,36vw,440px)]"
             style={{
               transformStyle: "preserve-3d",
               boxShadow: "inset 0 0 2px 1px rgba(255,255,255,0.2)",
@@ -248,7 +264,7 @@ export default function CompanyCoverflowSection() {
                     return (
                       <Wrapper {...wrapperProps}>
                         <div
-                          className="relative overflow-hidden rounded-3xl px-8 py-4"
+                          className="relative mx-auto w-full max-w-[200px] overflow-hidden rounded-3xl px-6 py-4 md:max-w-[240px] md:px-8"
                           style={{
                             background:
                               "linear-gradient(160deg, rgba(255, 255, 255, 0.73) 0%, rgba(255,255,255,0.15) 55%, rgba(255,255,255,0.3) 100%)",
@@ -271,7 +287,7 @@ export default function CompanyCoverflowSection() {
                           <img
                             src={c.logo}
                             alt={c.name}
-                            className="relative max-h-16 w-auto object-contain md:max-h-24"
+                            className="relative mx-auto h-auto max-h-14 w-auto max-w-full object-contain md:max-h-20"
                           />
 
                           {/* شارة صغيرة ثابتة توضح إن اللوقو قابل للضغط ويودي لموقع الشركة */}
