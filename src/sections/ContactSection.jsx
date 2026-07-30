@@ -49,10 +49,14 @@ const CONTACT_INFO = [
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
+// عدّل الرابط هذا بالـ Form Endpoint اللي تعطيك ياه Formspree
+const FORMSPREE_ENDPOINT = "https://formspree.io/f/mqerjjwq";
+
 export default function ContactSection() {
   const [values, setValues] = useState({ name: "", email: "", message: "" });
   const [errors, setErrors] = useState({});
-  const [status, setStatus] = useState(null); // null | "success"
+  const [status, setStatus] = useState(null); // null | "success" | "error"
+  const [submitting, setSubmitting] = useState(false);
 
   function updateField(field, value) {
     setValues((v) => ({ ...v, [field]: value }));
@@ -78,7 +82,7 @@ export default function ContactSection() {
     return next;
   }
 
-  function handleSubmit(e) {
+  async function handleSubmit(e) {
     e.preventDefault();
     const nextErrors = validate();
     setErrors(nextErrors);
@@ -88,9 +92,27 @@ export default function ContactSection() {
       return;
     }
 
-    // TODO: هنا نربط لاحقًا خدمة إرسال فعلية (Formspree/Backend)
-    setStatus("success");
-    setValues({ name: "", email: "", message: "" });
+    setSubmitting(true);
+    setStatus(null);
+
+    try {
+      const res = await fetch(FORMSPREE_ENDPOINT, {
+        method: "POST",
+        headers: { Accept: "application/json" },
+        body: new FormData(e.target),
+      });
+
+      if (res.ok) {
+        setStatus("success");
+        setValues({ name: "", email: "", message: "" });
+      } else {
+        setStatus("error");
+      }
+    } catch {
+      setStatus("error");
+    } finally {
+      setSubmitting(false);
+    }
   }
 
   const fieldClass = (field) =>
@@ -117,6 +139,7 @@ export default function ContactSection() {
               <div className="mb-3">
                 <input
                   type="text"
+                  name="name"
                   placeholder="الاسم الكامل"
                   value={values.name}
                   onChange={(e) => updateField("name", e.target.value)}
@@ -130,6 +153,7 @@ export default function ContactSection() {
               <div className="mb-3">
                 <input
                   type="email"
+                  name="email"
                   placeholder="البريد الإلكتروني"
                   value={values.email}
                   onChange={(e) => updateField("email", e.target.value)}
@@ -142,6 +166,7 @@ export default function ContactSection() {
 
               <div className="mb-3">
                 <textarea
+                  name="message"
                   placeholder="حدثنا عن مشروعك…"
                   rows={5}
                   value={values.message}
@@ -159,16 +184,23 @@ export default function ContactSection() {
 
               <motion.button
                 type="submit"
+                disabled={submitting}
                 whileHover={{ scale: 1.015 }}
                 whileTap={{ scale: 0.985 }}
-                className="mt-2 w-full rounded-full bg-ink py-4 text-sm font-medium tracking-wide text-paper"
+                className="mt-2 w-full rounded-full bg-ink py-4 text-sm font-medium tracking-wide text-paper disabled:opacity-60"
               >
-                إرسال
+                {submitting ? "جارٍ الإرسال..." : "إرسال"}
               </motion.button>
 
               {status === "success" && (
                 <p className="mt-3 text-center text-sm text-ink">
                   تم استلام رسالتك، بنتواصل معك قريبًا.
+                </p>
+              )}
+
+              {status === "error" && (
+                <p className="mt-3 text-center text-sm text-red-500">
+                  حدث خطأ أثناء الإرسال، حاول مرة أخرى.
                 </p>
               )}
 
